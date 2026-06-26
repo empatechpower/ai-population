@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-bg text-primary font-sans antialiased;
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+  }
+}
+
+@layer utilities {
+  .font-serif { font-family: 'DM Serif Display', 'Georgia', serif; }
+  .font-italic { font-style: italic; }
+  .text-primary   { color: #1A1816; }
+  .text-secondary { color: #7B7268; }
+  .text-muted     { color: #9A9094; }
+  .text-gold      { color: #D4B06A; }
+  .text-success   { color: #1F7A5A; }
+  .text-warning   { color: #C26B2E; }
+  .bg-bg       { background-color: #F6F1E8; }
+  .bg-card     { background-color: #F9F6F1; }
+  .bg-elevated { background-color: #FFFFFF; }
+  .bg-section  { background-color: #EDE8DF; }
+  .border-gold-subtle { border-color: rgba(212,176,106,0.35); }
+  .border-border { border-color: rgba(180,155,120,0.18); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.fade-up   { animation: fadeUp 0.4s ease both; }
+.fade-up-1 { animation: fadeUp 0.4s 0.1s ease both; }
+.fade-up-2 { animation: fadeUp 0.4s 0.2s ease both; }
+.fade-up-3 { animation: fadeUp 0.4s 0.3s ease both; }
+.fade-up-4 { animation: fadeUp 0.4s 0.4s ease both; }
+.fade-up-5 { animation: fadeUp 0.4s 0.5s ease both; }
+.spin { animation: spin 0.8s linear infinite; }
