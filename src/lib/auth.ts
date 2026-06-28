@@ -51,6 +51,14 @@ export async function logIn(email: string, password: string) {
   return { token, userId };
 }
 
+// ── Forgot password ───────────────────────────────────────────
+// Requires a Bubble workflow named "requestpasswordreset" that calls
+// the built-in "Send password reset email" action.
+export async function requestPasswordReset(email: string) {
+  const res = await bubblePost("/wf/requestpasswordreset", { email });
+  return res;
+}
+
 // ── Log out ───────────────────────────────────────────────────
 export function logOut() {
   Cookies.remove(TOKEN_KEY);

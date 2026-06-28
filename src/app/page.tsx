@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { logIn, signUp } from "@/lib/auth";
+import { logIn, signUp, requestPasswordReset } from "@/lib/auth";
 import { ArrowRight, ChevronLeft, Leaf } from "lucide-react";
 import Input from "@/components/shared/Input";
 
@@ -15,7 +15,8 @@ const BORDER = "rgba(0,0,0,0.08)";
 
 export default function LandingPage() {
   const router = useRouter();
-  const [mode, setMode] = useState<"landing" | "login" | "signup">("landing");
+  const [mode, setMode] = useState<"landing" | "login" | "signup" | "forgot">("landing");
+  const [resetSent, setResetSent] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -42,6 +43,19 @@ export default function LandingPage() {
       router.push("/dashboard");
     } catch (e: any) {
       setError(e?.message || "Invalid email or password.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleForgotPassword() {
+    setLoading(true);
+    setError("");
+    try {
+      await requestPasswordReset(email);
+      setResetSent(true);
+    } catch (e: any) {
+      setError(e?.message || "Could not send reset email. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -200,12 +214,27 @@ export default function LandingPage() {
             disabled={loading}
             label={loading ? "Signing in..." : "Sign In"}
           />
+          <p style={{ textAlign: "center", marginTop: 16 }}>
+            <button
+              onClick={() => { setMode("forgot"); setError(""); setResetSent(false); }}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                color: TEXT_MUTED,
+                fontSize: 13,
+                fontFamily: "inherit",
+              }}
+            >
+              Forgot password?
+            </button>
+          </p>
           <p
             style={{
               textAlign: "center",
               fontSize: 13,
               color: TEXT_MUTED,
-              marginTop: 20,
+              marginTop: 8,
             }}
           >
             No account?{" "}
@@ -321,6 +350,90 @@ export default function LandingPage() {
               Sign in
             </button>
           </p>
+        </div>
+      </div>
+    );
+
+  if (mode === "forgot")
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          background: BG,
+          padding: "0 24px",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <button
+          onClick={() => { setMode("login"); setError(""); setResetSent(false); }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: "20px 0",
+            color: TEXT_MUTED,
+            fontFamily: "inherit",
+            fontSize: 14,
+          }}
+        >
+          <ChevronLeft size={18} /> Back
+        </button>
+        <div style={{ flex: 1, paddingTop: 20 }}>
+          <h2
+            style={{
+              fontSize: 28,
+              fontWeight: 500,
+              color: TEXT_PRIMARY,
+              letterSpacing: "-0.02em",
+              marginBottom: 8,
+            }}
+          >
+            Reset password
+          </h2>
+          <p style={{ fontSize: 15, color: TEXT_SECONDARY, marginBottom: 32 }}>
+            Enter your email and we'll send you a reset link.
+          </p>
+          {resetSent ? (
+            <div
+              style={{
+                background: "rgba(212,176,106,0.12)",
+                border: `1px solid ${GOLD}40`,
+                borderRadius: 12,
+                padding: "16px 20px",
+                fontSize: 14,
+                color: TEXT_SECONDARY,
+                lineHeight: 1.6,
+              }}
+            >
+              Check your inbox — a reset link is on its way to <strong>{email}</strong>.
+            </div>
+          ) : (
+            <>
+              <div className="flex flex-col gap-4 mb-6">
+                <Input
+                  label="Email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                />
+              </div>
+              {error && (
+                <p style={{ fontSize: 13, color: "#E57373", marginBottom: 16 }}>
+                  {error}
+                </p>
+              )}
+              <PrimaryBtn
+                onClick={handleForgotPassword}
+                disabled={loading || !email}
+                label={loading ? "Sending..." : "Send Reset Link"}
+              />
+            </>
+          )}
         </div>
       </div>
     );

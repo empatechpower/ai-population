@@ -10,8 +10,6 @@
 // ─────────────────────────────────────────────────────────────
 
 const BASE_URL = process.env.NEXT_PUBLIC_BUBBLE_BASE_URL as string;
-// App-level API token — used only for unauthenticated calls (signup)
-const APP_TOKEN = process.env.NEXT_PUBLIC_BUBBLE_API_TOKEN as string;
 
 // ── Core fetch wrapper ────────────────────────────────────────
 async function bubbleFetch(
@@ -19,15 +17,16 @@ async function bubbleFetch(
   options: RequestInit = {},
   token?: string,
 ): Promise<any> {
-  const authToken = token ?? APP_TOKEN;
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(options.headers as Record<string, string>),
+  };
+
+  if (token) headers["Authorization"] = `Bearer ${token}`;
 
   const res = await fetch(`${BASE_URL}${path}`, {
     ...options,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authToken}`,
-      ...options.headers,
-    },
+    headers,
   });
 
   // 🔥 ALWAYS try JSON first (Bubble returns JSON even on errors)
