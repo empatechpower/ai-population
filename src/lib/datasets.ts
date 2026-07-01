@@ -104,13 +104,15 @@ export async function getFemaleJobs(): Promise<NormalisedJob[]> {
     const raw = await fetchAllFromBubble("femalejob", token);
     if (raw.length === 0) throw new Error("empty");
 
-    femaleJobsCache = raw.map((j: BubbleFemaleJob) => ({
-      id: j._id,
-      job: j.job_text,
-      gender: "female",
-      common_risks: j.common_risks_list_text ?? [],
-      nutrient_risks: j.nutrient_risks_list_text ?? [],
-    }));
+    femaleJobsCache = raw
+      .filter((j: BubbleFemaleJob) => j.job_text)
+      .map((j: BubbleFemaleJob) => ({
+        id: j._id,
+        job: j.job_text,
+        gender: "female",
+        common_risks: j.common_risks_list_text ?? [],
+        nutrient_risks: j.nutrient_risks_list_text ?? [],
+      }));
   } catch {
     // Fallback to local JSON
     femaleJobsCache = (femaleJobsData.female_jobs as any[]).map((j) => ({
@@ -138,17 +140,19 @@ export async function getMaleJobs(): Promise<NormalisedJob[]> {
     const raw = await fetchAllFromBubble("malejob", token);
     if (raw.length === 0) throw new Error("empty");
 
-    maleJobsCache = raw.map((j: BubbleMaleJob) => ({
-      id: j._id,
-      job: j.job_text,
-      gender: "male",
-      common_risks: j.common_risks_list_text ?? [],
-      nutrient_risks: j.nutrient_risks_list_text ?? [],
-      sperm_impact: j.sperm_impact_text,
-      hormone_impact: j.hormone_impact_text,
-      recommended_foods: j.recommended_foods_list_text ?? [],
-      supplements: j.supplements_list_text ?? [],
-    }));
+    maleJobsCache = raw
+      .filter((j: BubbleMaleJob) => j.job_text)
+      .map((j: BubbleMaleJob) => ({
+        id: j._id,
+        job: j.job_text,
+        gender: "male",
+        common_risks: j.common_risks_list_text ?? [],
+        nutrient_risks: j.nutrient_risks_list_text ?? [],
+        sperm_impact: j.sperm_impact_text,
+        hormone_impact: j.hormone_impact_text,
+        recommended_foods: j.recommended_foods_list_text ?? [],
+        supplements: j.supplements_list_text ?? [],
+      }));
   } catch {
     maleJobsCache = (maleJobsData.male_jobs as any[]).map((j) => ({
       id: String(j.id),

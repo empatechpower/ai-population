@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { logIn, signUp, requestPasswordReset } from "@/lib/auth";
-import { ArrowRight, ChevronLeft, Leaf } from "lucide-react";
+import { ArrowRight, ChevronLeft } from "lucide-react";
 import Input from "@/components/shared/Input";
 
 const BG = "#F5F2EC";
@@ -451,20 +452,8 @@ export default function LandingPage() {
     >
       <div style={{ flex: 1, paddingTop: 60 }}>
         {/* Logo mark */}
-        <div
-          className="fade-up"
-          style={{
-            width: 52,
-            height: 52,
-            borderRadius: 16,
-            background: "rgba(212,176,106,0.15)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: 32,
-          }}
-        >
-          <Leaf size={24} color={GOLD} />
+        <div className="fade-up" style={{ marginBottom: 32 }}>
+          <Image src="/logo.png" alt="Bloom" width={160} height={128} priority style={{ width: 160, height: "auto" }} />
         </div>
         <p
           className="fade-up-1"

@@ -56,6 +56,11 @@ export async function logIn(email: string, password: string) {
 // the built-in "Send password reset email" action.
 export async function requestPasswordReset(email: string) {
   const res = await bubblePost("/wf/requestpasswordreset", { email });
+  // Bubble can return HTTP 200 with an error payload inside
+  if (res?.status === "ERROR" || res?.statusCode >= 400) {
+    const msg = res?.message || res?.response?.message || "Password reset failed";
+    throw new Error(msg);
+  }
   return res;
 }
 
