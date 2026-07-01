@@ -15,20 +15,20 @@ import foodsData from "@/data/pregnancy_foods.json";
 // ── Types ─────────────────────────────────────────────────────
 export interface BubbleFemaleJob {
   _id: string;
-  job_text: string;
-  common_risks_list_text: string[];
-  nutrient_risks_list_text: string[];
+  job: string;
+  common_risks: string[];
+  nutrient_risks: string[];
 }
 
 export interface BubbleMaleJob {
   _id: string;
-  job_text: string;
-  common_risks_list_text: string[];
-  nutrient_risks_list_text: string[];
-  sperm_impact_text: string;
-  hormone_impact_text: string;
-  recommended_foods_list_text: string[];
-  supplements_list_text: string[];
+  job: string;
+  common_risks: string[];
+  nutrient_risks: string[];
+  sperm_impact: string;
+  hormone_impact: string;
+  recommended_foods: string[];
+  supplements: string[];
 }
 
 export interface BubbleFood {
@@ -105,13 +105,13 @@ export async function getFemaleJobs(): Promise<NormalisedJob[]> {
     if (raw.length === 0) throw new Error("empty");
 
     femaleJobsCache = raw
-      .filter((j: BubbleFemaleJob) => j.job_text)
+      .filter((j: BubbleFemaleJob) => j.job)
       .map((j: BubbleFemaleJob) => ({
         id: j._id,
-        job: j.job_text,
+        job: j.job,
         gender: "female",
-        common_risks: j.common_risks_list_text ?? [],
-        nutrient_risks: j.nutrient_risks_list_text ?? [],
+        common_risks: j.common_risks ?? [],
+        nutrient_risks: j.nutrient_risks ?? [],
       }));
   } catch {
     // Fallback to local JSON
@@ -141,17 +141,17 @@ export async function getMaleJobs(): Promise<NormalisedJob[]> {
     if (raw.length === 0) throw new Error("empty");
 
     maleJobsCache = raw
-      .filter((j: BubbleMaleJob) => j.job_text)
+      .filter((j: BubbleMaleJob) => j.job)
       .map((j: BubbleMaleJob) => ({
         id: j._id,
-        job: j.job_text,
+        job: j.job,
         gender: "male",
-        common_risks: j.common_risks_list_text ?? [],
-        nutrient_risks: j.nutrient_risks_list_text ?? [],
-        sperm_impact: j.sperm_impact_text,
-        hormone_impact: j.hormone_impact_text,
-        recommended_foods: j.recommended_foods_list_text ?? [],
-        supplements: j.supplements_list_text ?? [],
+        common_risks: j.common_risks ?? [],
+        nutrient_risks: j.nutrient_risks ?? [],
+        sperm_impact: j.sperm_impact,
+        hormone_impact: j.hormone_impact,
+        recommended_foods: j.recommended_foods ?? [],
+        supplements: j.supplements ?? [],
       }));
   } catch {
     maleJobsCache = (maleJobsData.male_jobs as any[]).map((j) => ({
