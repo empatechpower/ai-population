@@ -1,11 +1,11 @@
 // ─────────────────────────────────────────────────────────────
-// Dynamic dataset fetching from Bubble
+// Dynamic dataset fetching from Firestore
 // Replaces static JSON imports for jobs, foods, and milk data.
-// Falls back to local JSON if Bubble is unreachable or returns 0 results.
+// Falls back to local JSON if Firestore is unreachable or returns 0 results.
 // ─────────────────────────────────────────────────────────────
 
-import { bubbleGet } from "./bubble";
-import { getToken } from "./auth";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "./firebase";
 
 // Local JSON fallbacks
 import femaleJobsData from "@/data/female_jobs.json";
@@ -63,32 +63,10 @@ export interface NormalisedFood {
   science: string;
 }
 
-// ── Fetch all female jobs from Bubble ────────────────────────
-// Fetches all pages by looping until remaining = 0
-async function fetchAllFromBubble(type: string, token: string): Promise<any[]> {
-  const PAGE = 50;
-  const results: any[] = [];
-  let cursor = 0;
-  let remaining = 1; // start > 0 to enter loop
-
-  while (remaining > 0) {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BUBBLE_BASE_URL}/obj/${type}?sort_field=Created%20Date&limit=${PAGE}&cursor=${cursor}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-    const d = await res.json();
-    const page = d.response?.results ?? [];
-    results.push(...page);
-    remaining = d.response?.remaining ?? 0;
-    cursor += page.length;
-    if (page.length === 0) break;
-  }
-  return results;
+// ── Fetch all documents in a Firestore collection ────────────
+async function fetchAllFromFirestore(collectionName: string): Promise<any[]> {
+  const snap = await getDocs(collection(db, collectionName));
+  return snap.docs.map((d) => ({ _id: d.id, ...d.data() }));
 }
 
 // ── Female Jobs ───────────────────────────────────────────────
@@ -98,10 +76,7 @@ export async function getFemaleJobs(): Promise<NormalisedJob[]> {
   if (femaleJobsCache) return femaleJobsCache;
 
   try {
-    const token = getToken();
-    if (!token) throw new Error("no token");
-
-    const raw = await fetchAllFromBubble("femalejob", token);
+    const raw = await fetchAllFromFirestore("femaleJobs");
     if (raw.length === 0) throw new Error("empty");
 
     femaleJobsCache = raw
@@ -134,10 +109,7 @@ export async function getMaleJobs(): Promise<NormalisedJob[]> {
   if (maleJobsCache) return maleJobsCache;
 
   try {
-    const token = getToken();
-    if (!token) throw new Error("no token");
-
-    const raw = await fetchAllFromBubble("malejob", token);
+    const raw = await fetchAllFromFirestore("maleJobs");
     if (raw.length === 0) throw new Error("empty");
 
     maleJobsCache = raw
@@ -203,10 +175,7 @@ export async function getPregnancyFoods(): Promise<NormalisedFood[]> {
   if (foodsCache) return foodsCache;
 
   try {
-    const token = getToken();
-    if (!token) throw new Error("no token");
-
-    const raw = await fetchAllFromBubble("pregnancyfood", token);
+    const raw = await fetchAllFromFirestore("pregnancyFoods");
     if (raw.length === 0) throw new Error("empty");
 
     foodsCache = raw.map((f: BubbleFood) => ({

@@ -1,0 +1,210 @@
+// ─────────────────────────────────────────────────────────────
+// Dynamic dataset fetching from Firestore
+// Replaces static JSON imports for jobs, foods, and milk data.
+// Falls back to local JSON if Firestore is unreachable or returns 0 results.
+// ─────────────────────────────────────────────────────────────
+
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "./firebase";
+
+// Local JSON fallbacks
+import femaleJobsData from "@/data/female_jobs.json";
+import maleJobsData from "@/data/male_jobs.json";
+import foodsData from "@/data/pregnancy_foods.json";
+
+// ── Types ─────────────────────────────────────────────────────
+export interface BubbleFemaleJob {
+  _id: string;
+  job: string;
+  common_risks: string[];
+  nutrient_risks: string[];
+}
+
+export interface BubbleMaleJob {
+  _id: string;
+  job: string;
+  common_risks: string[];
+  nutrient_risks: string[];
+  sperm_impact: string;
+  hormone_impact: string;
+  recommended_foods: string[];
+  supplements: string[];
+}
+
+export interface BubbleFood {
+  _id: string;
+  food_text: string;
+  stage_text: string;
+  baby_effect_text: string;
+  mother_effect_text: string;
+  nutrients_list_text: string[];
+  science_text: string;
+}
+
+export interface NormalisedJob {
+  id: string;
+  job: string;
+  gender: string;
+  common_risks: string[];
+  nutrient_risks: string[];
+  sperm_impact?: string;
+  hormone_impact?: string;
+  recommended_foods?: string[];
+  supplements?: string[];
+}
+
+export interface NormalisedFood {
+  id: string;
+  food: string;
+  stage: string;
+  baby_effect: string;
+  mother_effect: string;
+  nutrients: string[];
+  science: string;
+}
+
+// ── Fetch all documents in a Firestore collection ────────────
+async function fetchAllFromFirestore(collectionName: string): Promise<any[]> {
+  const snap = await getDocs(collection(db, collectionName));
+  return snap.docs.map((d) => ({ _id: d.id, ...d.data() }));
+}
+
+// ── Female Jobs ───────────────────────────────────────────────
+let femaleJobsCache: NormalisedJob[] | null = null;
+
+export async function getFemaleJobs(): Promise<NormalisedJob[]> {
+  if (femaleJobsCache) return femaleJobsCache;
+
+  try {
+    const raw = await fetchAllFromFirestore("femaleJobs");
+    if (raw.length === 0) throw new Error("empty");
+
+    femaleJobsCache = raw
+      .filter((j: BubbleFemaleJob) => j.job)
+      .map((j: BubbleFemaleJob) => ({
+        id: j._id,
+        job: j.job,
+        gender: "female",
+        common_risks: j.common_risks ?? [],
+        nutrient_risks: j.nutrient_risks ?? [],
+      }));
+  } catch {
+    // Fallback to local JSON
+    femaleJobsCache = (femaleJobsData.female_jobs as any[]).map((j) => ({
+      id: String(j.id),
+      job: j.job,
+      gender: "female",
+      common_risks: j.common_risks ?? [],
+      nutrient_risks: j.nutrient_risks ?? [],
+    }));
+  }
+
+  return femaleJobsCache!;
+}
+
+// ── Male Jobs ─────────────────────────────────────────────────
+let maleJobsCache: NormalisedJob[] | null = null;
+
+export async function getMaleJobs(): Promise<NormalisedJob[]> {
+  if (maleJobsCache) return maleJobsCache;
+
+  try {
+    const raw = await fetchAllFromFirestore("maleJobs");
+    if (raw.length === 0) throw new Error("empty");
+
+    maleJobsCache = raw
+      .filter((j: BubbleMaleJob) => j.job)
+      .map((j: BubbleMaleJob) => ({
+        id: j._id,
+        job: j.job,
+        gender: "male",
+        common_risks: j.common_risks ?? [],
+        nutrient_risks: j.nutrient_risks ?? [],
+        sperm_impact: j.sperm_impact,
+        hormone_impact: j.hormone_impact,
+        recommended_foods: j.recommended_foods ?? [],
+        supplements: j.supplements ?? [],
+      }));
+  } catch {
+    maleJobsCache = (maleJobsData.male_jobs as any[]).map((j) => ({
+      id: String(j.id),
+      job: j.job,
+      gender: "male",
+      common_risks: j.common_risks ?? [],
+      nutrient_risks: j.nutrient_risks ?? [],
+      sperm_impact: j.fertility_impact?.sperm,
+      hormone_impact: j.fertility_impact?.hormones,
+      recommended_foods: j.recommended_foods ?? [],
+      supplements: j.supplements ?? [],
+    }));
+  }
+
+  return maleJobsCache!;
+}
+
+// ── Lookup job by title (replaces job_index.ts lookupJob) ────
+export async function lookupJobDynamic(
+  jobTitle: string,
+  gender: "male" | "female",
+): Promise<NormalisedJob | null> {
+  if (!jobTitle?.trim()) return null;
+  const jobs =
+    gender === "female" ? await getFemaleJobs() : await getMaleJobs();
+  const key = jobTitle.toLowerCase().trim();
+  return (
+    jobs.find((j) => {
+      const jk = j.job.toLowerCase();
+      return jk === key || jk.includes(key) || key.includes(jk);
+    }) ?? null
+  );
+}
+
+// Get all job titles for autocomplete dropdowns
+export async function getAllJobTitlesDynamic(
+  gender: "male" | "female",
+): Promise<string[]> {
+  const jobs =
+    gender === "female" ? await getFemaleJobs() : await getMaleJobs();
+  return jobs.map((j) => j.job).sort();
+}
+
+// ── Pregnancy Foods ───────────────────────────────────────────
+let foodsCache: NormalisedFood[] | null = null;
+
+export async function getPregnancyFoods(): Promise<NormalisedFood[]> {
+  if (foodsCache) return foodsCache;
+
+  try {
+    const raw = await fetchAllFromFirestore("pregnancyFoods");
+    if (raw.length === 0) throw new Error("empty");
+
+    foodsCache = raw.map((f: BubbleFood) => ({
+      id: f._id,
+      food: f.food_text,
+      stage: f.stage_text,
+      baby_effect: f.baby_effect_text,
+      mother_effect: f.mother_effect_text,
+      nutrients: f.nutrients_list_text ?? [],
+      science: f.science_text ?? "",
+    }));
+  } catch {
+    foodsCache = (foodsData.foods as any[]).map((f) => ({
+      id: String(f.id),
+      food: f.food,
+      stage: f.stage,
+      baby_effect: f.baby_effect,
+      mother_effect: f.mother_effect,
+      nutrients: f.nutrients ?? [],
+      science: f.science ?? "",
+    }));
+  }
+
+  return foodsCache!;
+}
+
+// Clear caches (call after admin edits a dataset)
+export function clearDatasetCaches() {
+  femaleJobsCache = null;
+  maleJobsCache = null;
+  foodsCache = null;
+}

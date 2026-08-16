@@ -108,11 +108,7 @@ export default function MovementPage() {
         setGenerating(true);
 
         // Trigger AI and get response directly
-        const uid = getUserId() ?? profile?._id;
-        const res = await triggerGenerateMovement();
-
-        // Parse AI response
-        const parsed = JSON.parse(res.response.results);
+        const parsed = await triggerGenerateMovement();
         const aiPractices = parsed.practices || [];
 
         // Create all Movement records in parallel

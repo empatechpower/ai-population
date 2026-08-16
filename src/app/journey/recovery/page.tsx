@@ -108,19 +108,7 @@ export default function RecoveryPage() {
       hasGenerated.current = true;
       setGenerating(true);
 
-      const res = await triggerGenerateRecoveryDetail();
-
-      // 3. Parse safely (FIXED result → results fallback)
-      let parsed;
-
-      try {
-        const raw = res?.response?.results ?? res?.response?.result;
-
-        parsed = parseAI(raw);
-      } catch (parseErr) {
-        console.error("Failed to parse recovery detail:", res?.response);
-        throw parseErr;
-      }
+      const parsed = await triggerGenerateRecoveryDetail();
 
       // 4. Validate structure
       if (!parsed || typeof parsed !== "object") {

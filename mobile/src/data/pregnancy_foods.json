@@ -1,0 +1,904 @@
+{
+  "foods": [
+    {
+      "id": 1,
+      "food": "Dates",
+      "stage": "week 36+",
+      "baby_effect": "supports smoother labor transition",
+      "mother_effect": "helps cervical ripening",
+      "nutrients": ["magnesium", "natural sugars"],
+      "science": "associated with shorter labor duration"
+    },
+    {
+      "id": 2,
+      "food": "Eggs",
+      "stage": "week 1-8",
+      "baby_effect": "boosts brain cell formation",
+      "mother_effect": "supports hormone balance",
+      "nutrients": ["choline"],
+      "science": "choline is critical for neural tube development"
+    },
+    {
+      "id": 3,
+      "food": "Walnuts",
+      "stage": "week 10-25",
+      "baby_effect": "enhances brain connectivity",
+      "mother_effect": "reduces inflammation",
+      "nutrients": ["omega-3"],
+      "science": "omega-3 supports fetal brain wiring"
+    },
+    {
+      "id": 4,
+      "food": "Beetroot",
+      "stage": "week 20+",
+      "baby_effect": "improves oxygen delivery",
+      "mother_effect": "boosts blood flow",
+      "nutrients": ["nitrates", "iron"],
+      "science": "supports increased blood volume in pregnancy"
+    },
+    {
+      "id": 5,
+      "food": "Pumpkin seeds",
+      "stage": "week 15+",
+      "baby_effect": "supports nervous system",
+      "mother_effect": "reduces cramps",
+      "nutrients": ["magnesium"],
+      "science": "magnesium reduces muscle tension"
+    },
+    {
+      "id": 6,
+      "food": "Greek yogurt",
+      "stage": "week 20+",
+      "baby_effect": "builds strong bones",
+      "mother_effect": "supports gut health",
+      "nutrients": ["calcium", "probiotics"],
+      "science": "calcium critical for skeletal growth"
+    },
+    {
+      "id": 7,
+      "food": "Avocado",
+      "stage": "week 5-20",
+      "baby_effect": "supports brain and spine",
+      "mother_effect": "stabilizes blood sugar",
+      "nutrients": ["folate"],
+      "science": "folate prevents neural defects"
+    },
+    {
+      "id": 8,
+      "food": "Dark chocolate (85%)",
+      "stage": "week 20+",
+      "baby_effect": "supports placenta function",
+      "mother_effect": "reduces stress",
+      "nutrients": ["flavonoids"],
+      "science": "improves blood flow"
+    },
+    {
+      "id": 9,
+      "food": "Spinach",
+      "stage": "week 1-12",
+      "baby_effect": "supports DNA formation",
+      "mother_effect": "prevents anemia",
+      "nutrients": ["folate", "iron"],
+      "science": "essential for early development"
+    },
+    {
+      "id": 10,
+      "food": "Blueberries",
+      "stage": "all stages",
+      "baby_effect": "protects brain cells",
+      "mother_effect": "reduces oxidative stress",
+      "nutrients": ["antioxidants"],
+      "science": "protects against cellular damage"
+    },
+    {
+      "id": 11,
+      "food": "Salmon",
+      "stage": "week 12+",
+      "baby_effect": "enhances brain growth",
+      "mother_effect": "supports mood stability",
+      "nutrients": ["DHA"],
+      "science": "DHA is critical for brain development"
+    },
+    {
+      "id": 12,
+      "food": "Sweet potatoes",
+      "stage": "week 10+",
+      "baby_effect": "supports eye development",
+      "mother_effect": "boosts immunity",
+      "nutrients": ["beta-carotene"],
+      "science": "converts to vitamin A safely"
+    },
+    {
+      "id": 13,
+      "food": "Bananas",
+      "stage": "all stages",
+      "baby_effect": "supports muscle function",
+      "mother_effect": "reduces nausea",
+      "nutrients": ["potassium"],
+      "science": "balances fluids"
+    },
+    {
+      "id": 14,
+      "food": "Lentils",
+      "stage": "week 5-20",
+      "baby_effect": "supports tissue growth",
+      "mother_effect": "prevents fatigue",
+      "nutrients": ["iron"],
+      "science": "supports hemoglobin production"
+    },
+    {
+      "id": 15,
+      "food": "Chia seeds",
+      "stage": "week 12+",
+      "baby_effect": "supports brain + spine",
+      "mother_effect": "improves digestion",
+      "nutrients": ["omega-3", "fiber"],
+      "science": "supports fetal nervous system"
+    },
+    {
+      "id": 16,
+      "food": "Ginger",
+      "stage": "week 1-12",
+      "baby_effect": "indirect protection",
+      "mother_effect": "reduces nausea",
+      "nutrients": ["gingerol"],
+      "science": "clinically used for morning sickness"
+    },
+    {
+      "id": 17,
+      "food": "Garlic",
+      "stage": "all stages",
+      "baby_effect": "supports immune system",
+      "mother_effect": "improves circulation",
+      "nutrients": ["allicin"],
+      "science": "antimicrobial effects"
+    },
+    {
+      "id": 18,
+      "food": "Oats",
+      "stage": "week 20+",
+      "baby_effect": "steady growth",
+      "mother_effect": "stabilizes energy",
+      "nutrients": ["complex carbs"],
+      "science": "prevents glucose spikes"
+    },
+    {
+      "id": 19,
+      "food": "Almonds",
+      "stage": "week 10+",
+      "baby_effect": "supports brain tissue",
+      "mother_effect": "reduces stress",
+      "nutrients": ["vitamin E"],
+      "science": "protects cells"
+    },
+    {
+      "id": 20,
+      "food": "Broccoli",
+      "stage": "week 5-20",
+      "baby_effect": "supports organ formation",
+      "mother_effect": "detox support",
+      "nutrients": ["sulforaphane"],
+      "science": "supports cellular defense"
+    },
+    {
+      "id": 21,
+      "food": "Pomegranate",
+      "stage": "week 20+",
+      "baby_effect": "supports brain protection",
+      "mother_effect": "improves blood flow",
+      "nutrients": ["polyphenols"],
+      "science": "may protect placenta from oxidative stress"
+    },
+    {
+      "id": 22,
+      "food": "Quinoa",
+      "stage": "all stages",
+      "baby_effect": "supports cell growth",
+      "mother_effect": "provides complete protein",
+      "nutrients": ["protein", "magnesium"],
+      "science": "contains all essential amino acids"
+    },
+    {
+      "id": 23,
+      "food": "Kiwi",
+      "stage": "week 10+",
+      "baby_effect": "supports immune development",
+      "mother_effect": "improves digestion",
+      "nutrients": ["vitamin C"],
+      "science": "enhances iron absorption"
+    },
+    {
+      "id": 24,
+      "food": "Mango",
+      "stage": "week 12+",
+      "baby_effect": "supports vision",
+      "mother_effect": "boosts immunity",
+      "nutrients": ["vitamin A"],
+      "science": "supports fetal eye development"
+    },
+    {
+      "id": 25,
+      "food": "Cottage Cheese",
+      "stage": "week 20+",
+      "baby_effect": "builds bones",
+      "mother_effect": "supports muscle repair",
+      "nutrients": ["calcium", "protein"],
+      "science": "supports skeletal growth"
+    },
+    {
+      "id": 26,
+      "food": "Sunflower seeds",
+      "stage": "week 15+",
+      "baby_effect": "supports skin formation",
+      "mother_effect": "reduces inflammation",
+      "nutrients": ["vitamin E"],
+      "science": "protects developing cells"
+    },
+    {
+      "id": 27,
+      "food": "Turmeric",
+      "stage": "small amounts",
+      "baby_effect": "cell protection",
+      "mother_effect": "reduces inflammation",
+      "nutrients": ["curcumin"],
+      "science": "anti-inflammatory effects"
+    },
+    {
+      "id": 28,
+      "food": "Coconut water",
+      "stage": "all stages",
+      "baby_effect": "supports fluid balance",
+      "mother_effect": "prevents dehydration",
+      "nutrients": ["electrolytes"],
+      "science": "maintains hydration"
+    },
+    {
+      "id": 29,
+      "food": "Apples",
+      "stage": "all stages",
+      "baby_effect": "supports lung development",
+      "mother_effect": "gut health",
+      "nutrients": ["fiber"],
+      "science": "linked to reduced asthma risk"
+    },
+    {
+      "id": 30,
+      "food": "Red bell pepper",
+      "stage": "week 10+",
+      "baby_effect": "boosts immunity",
+      "mother_effect": "improves iron absorption",
+      "nutrients": ["vitamin C"],
+      "science": "enhances nutrient uptake"
+    },
+    {
+      "id": 31,
+      "food": "Asparagus",
+      "stage": "week 5-12",
+      "baby_effect": "supports neural tube",
+      "mother_effect": "detox support",
+      "nutrients": ["folate"],
+      "science": "critical early pregnancy vitamin"
+    },
+    {
+      "id": 32,
+      "food": "Black beans",
+      "stage": "week 10+",
+      "baby_effect": "supports muscle growth",
+      "mother_effect": "energy support",
+      "nutrients": ["iron", "protein"],
+      "science": "supports oxygen delivery"
+    },
+    {
+      "id": 33,
+      "food": "Sesame seeds",
+      "stage": "week 15+",
+      "baby_effect": "supports bone density",
+      "mother_effect": "hormone balance",
+      "nutrients": ["calcium"],
+      "science": "supports mineral intake"
+    },
+    {
+      "id": 34,
+      "food": "Figs",
+      "stage": "week 30+",
+      "baby_effect": "supports digestion",
+      "mother_effect": "reduces constipation",
+      "nutrients": ["fiber"],
+      "science": "natural laxative effect"
+    },
+    {
+      "id": 35,
+      "food": "Watermelon",
+      "stage": "week 20+",
+      "baby_effect": "supports hydration",
+      "mother_effect": "reduces swelling",
+      "nutrients": ["water", "vitamin C"],
+      "science": "reduces edema"
+    },
+    {
+      "id": 36,
+      "food": "Zucchini",
+      "stage": "week 10+",
+      "baby_effect": "supports cell division",
+      "mother_effect": "light digestion",
+      "nutrients": ["vitamin B6"],
+      "science": "supports metabolism"
+    },
+    {
+      "id": 37,
+      "food": "Parsley",
+      "stage": "small amounts",
+      "baby_effect": "supports immune system",
+      "mother_effect": "iron support",
+      "nutrients": ["vitamin C"],
+      "science": "boosts iron absorption"
+    },
+    {
+      "id": 38,
+      "food": "Eggplant",
+      "stage": "week 15+",
+      "baby_effect": "supports brain protection",
+      "mother_effect": "antioxidant support",
+      "nutrients": ["anthocyanins"],
+      "science": "protects cells"
+    },
+    {
+      "id": 39,
+      "food": "Mushrooms",
+      "stage": "week 10+",
+      "baby_effect": "supports bone formation",
+      "mother_effect": "immune support",
+      "nutrients": ["vitamin D"],
+      "science": "rare plant vitamin D source"
+    },
+    {
+      "id": 40,
+      "food": "Pineapple",
+      "stage": "moderate",
+      "baby_effect": "supports tissue growth",
+      "mother_effect": "digestive aid",
+      "nutrients": ["bromelain"],
+      "science": "supports digestion"
+    },
+    {
+      "id": 41,
+      "food": "Hazelnuts",
+      "stage": "week 12+",
+      "baby_effect": "supports brain growth",
+      "mother_effect": "reduces stress",
+      "nutrients": ["vitamin E"],
+      "science": "protects neural cells"
+    },
+    {
+      "id": 42,
+      "food": "Pumpkin",
+      "stage": "week 10+",
+      "baby_effect": "supports vision",
+      "mother_effect": "immune support",
+      "nutrients": ["beta-carotene"],
+      "science": "vitamin A precursor"
+    },
+    {
+      "id": 43,
+      "food": "Barley",
+      "stage": "week 20+",
+      "baby_effect": "steady growth",
+      "mother_effect": "blood sugar control",
+      "nutrients": ["fiber"],
+      "science": "low glycemic index"
+    },
+    {
+      "id": 44,
+      "food": "Raspberries",
+      "stage": "all stages",
+      "baby_effect": "cell protection",
+      "mother_effect": "anti-inflammatory",
+      "nutrients": ["antioxidants"],
+      "science": "reduces oxidative stress"
+    },
+    {
+      "id": 45,
+      "food": "Papaya (ripe)",
+      "stage": "moderate",
+      "baby_effect": "supports digestion",
+      "mother_effect": "gut health",
+      "nutrients": ["enzymes"],
+      "science": "digestive support"
+    },
+    {
+      "id": 46,
+      "food": "Green peas",
+      "stage": "week 10+",
+      "baby_effect": "supports cell division",
+      "mother_effect": "energy support",
+      "nutrients": ["folate"],
+      "science": "DNA formation"
+    },
+    {
+      "id": 47,
+      "food": "Chickpeas",
+      "stage": "week 15+",
+      "baby_effect": "muscle development",
+      "mother_effect": "satiety",
+      "nutrients": ["protein"],
+      "science": "supports growth"
+    },
+    {
+      "id": 48,
+      "food": "Kale",
+      "stage": "week 5-20",
+      "baby_effect": "organ development",
+      "mother_effect": "detox",
+      "nutrients": ["vitamin K"],
+      "science": "supports clotting"
+    },
+    {
+      "id": 49,
+      "food": "Plums",
+      "stage": "week 30+",
+      "baby_effect": "digestive support",
+      "mother_effect": "reduces constipation",
+      "nutrients": ["fiber"],
+      "science": "gut motility"
+    },
+    {
+      "id": 50,
+      "food": "Apricots",
+      "stage": "week 15+",
+      "baby_effect": "supports blood formation",
+      "mother_effect": "iron support",
+      "nutrients": ["iron"],
+      "science": "supports hemoglobin"
+    },
+    {
+      "id": 51,
+      "food": "Cranberries",
+      "stage": "all stages",
+      "baby_effect": "indirect protection",
+      "mother_effect": "prevents UTIs",
+      "nutrients": ["proanthocyanidins"],
+      "science": "urinary health"
+    },
+    {
+      "id": 52,
+      "food": "Leeks",
+      "stage": "week 10+",
+      "baby_effect": "supports immunity",
+      "mother_effect": "gut health",
+      "nutrients": ["prebiotics"],
+      "science": "feeds good bacteria"
+    },
+    {
+      "id": 53,
+      "food": "Turnips",
+      "stage": "week 15+",
+      "baby_effect": "supports metabolism",
+      "mother_effect": "detox support",
+      "nutrients": ["vitamin C"],
+      "science": "immune support"
+    },
+    {
+      "id": 54,
+      "food": "Cabbage",
+      "stage": "week 10+",
+      "baby_effect": "supports growth",
+      "mother_effect": "anti-inflammatory",
+      "nutrients": ["glucosinolates"],
+      "science": "cell protection"
+    },
+    {
+      "id": 55,
+      "food": "Radishes",
+      "stage": "week 15+",
+      "baby_effect": "immune support",
+      "mother_effect": "digestion",
+      "nutrients": ["vitamin C"],
+      "science": "antioxidant effect"
+    },
+    {
+      "id": 56,
+      "food": "Olives",
+      "stage": "all stages",
+      "baby_effect": "supports brain development",
+      "mother_effect": "heart health",
+      "nutrients": ["healthy fats"],
+      "science": "supports neural tissue"
+    },
+    {
+      "id": 57,
+      "food": "Flaxseeds",
+      "stage": "week 12+",
+      "baby_effect": "brain support",
+      "mother_effect": "hormone balance",
+      "nutrients": ["omega-3"],
+      "science": "supports neural growth"
+    },
+    {
+      "id": 58,
+      "food": "Seaweed",
+      "stage": "moderate",
+      "baby_effect": "supports thyroid",
+      "mother_effect": "iodine supply",
+      "nutrients": ["iodine"],
+      "science": "thyroid hormone production"
+    },
+    {
+      "id": 59,
+      "food": "Shrimp",
+      "stage": "moderate",
+      "baby_effect": "brain development",
+      "mother_effect": "protein supply",
+      "nutrients": ["protein", "iodine"],
+      "science": "supports growth"
+    },
+    {
+      "id": 60,
+      "food": "Cod fish",
+      "stage": "week 12+",
+      "baby_effect": "brain growth",
+      "mother_effect": "vitamin D support",
+      "nutrients": ["vitamin D"],
+      "science": "bone + brain development"
+    },
+    {
+      "id": 61,
+      "food": "Chicken liver",
+      "stage": "limited",
+      "baby_effect": "supports iron stores",
+      "mother_effect": "prevents anemia",
+      "nutrients": ["iron"],
+      "science": "high bioavailability"
+    },
+    {
+      "id": 62,
+      "food": "Turkey",
+      "stage": "all stages",
+      "baby_effect": "muscle development",
+      "mother_effect": "energy",
+      "nutrients": ["protein"],
+      "science": "tissue growth"
+    },
+    {
+      "id": 63,
+      "food": "Duck eggs",
+      "stage": "week 5+",
+      "baby_effect": "brain growth",
+      "mother_effect": "nutrient dense",
+      "nutrients": ["choline"],
+      "science": "neural support"
+    },
+    {
+      "id": 64,
+      "food": "Goat milk",
+      "stage": "week 20+",
+      "baby_effect": "bone support",
+      "mother_effect": "digestive ease",
+      "nutrients": ["calcium"],
+      "science": "easier digestion"
+    },
+    {
+      "id": 65,
+      "food": "Fermented foods",
+      "stage": "all stages",
+      "baby_effect": "immune support",
+      "mother_effect": "gut microbiome",
+      "nutrients": ["probiotics"],
+      "science": "gut-brain axis"
+    },
+    {
+      "id": 66,
+      "food": "Kimchi",
+      "stage": "moderate",
+      "baby_effect": "immune support",
+      "mother_effect": "digestion",
+      "nutrients": ["probiotics"],
+      "science": "microbiome support"
+    },
+    {
+      "id": 67,
+      "food": "Sauerkraut",
+      "stage": "all stages",
+      "baby_effect": "immune support",
+      "mother_effect": "gut health",
+      "nutrients": ["probiotics"],
+      "science": "supports digestion"
+    },
+    {
+      "id": 68,
+      "food": "Bone broth",
+      "stage": "week 20+",
+      "baby_effect": "joint development",
+      "mother_effect": "collagen support",
+      "nutrients": ["collagen"],
+      "science": "tissue repair"
+    },
+    {
+      "id": 69,
+      "food": "Gelatin",
+      "stage": "week 20+",
+      "baby_effect": "connective tissue",
+      "mother_effect": "joint support",
+      "nutrients": ["glycine"],
+      "science": "supports tissue formation"
+    },
+    {
+      "id": 70,
+      "food": "Green tea (low caffeine)",
+      "stage": "moderate",
+      "baby_effect": "cell protection",
+      "mother_effect": "antioxidants",
+      "nutrients": ["catechins"],
+      "science": "reduces oxidative stress"
+    },
+    {
+      "id": 71,
+      "food": "Peppermint",
+      "stage": "week 1-12",
+      "baby_effect": "indirect",
+      "mother_effect": "reduces nausea",
+      "nutrients": ["menthol"],
+      "science": "soothes digestion"
+    },
+    {
+      "id": 72,
+      "food": "Chamomile",
+      "stage": "moderate",
+      "baby_effect": "indirect",
+      "mother_effect": "improves sleep",
+      "nutrients": ["flavonoids"],
+      "science": "relaxation"
+    },
+    {
+      "id": 73,
+      "food": "Rosehip",
+      "stage": "all stages",
+      "baby_effect": "immune support",
+      "mother_effect": "vitamin C boost",
+      "nutrients": ["vitamin C"],
+      "science": "strong antioxidant"
+    },
+    {
+      "id": 74,
+      "food": "Blackcurrant",
+      "stage": "all stages",
+      "baby_effect": "eye development",
+      "mother_effect": "immune boost",
+      "nutrients": ["anthocyanins"],
+      "science": "supports vision"
+    },
+    {
+      "id": 75,
+      "food": "Mulberries",
+      "stage": "week 20+",
+      "baby_effect": "blood formation",
+      "mother_effect": "iron support",
+      "nutrients": ["iron"],
+      "science": "supports hemoglobin"
+    },
+    {
+      "id": 76,
+      "food": "Jackfruit",
+      "stage": "moderate",
+      "baby_effect": "energy support",
+      "mother_effect": "fiber intake",
+      "nutrients": ["fiber"],
+      "science": "gut health"
+    },
+    {
+      "id": 77,
+      "food": "Dragon fruit",
+      "stage": "all stages",
+      "baby_effect": "cell protection",
+      "mother_effect": "hydration",
+      "nutrients": ["antioxidants"],
+      "science": "supports cells"
+    },
+    {
+      "id": 78,
+      "food": "Passion fruit",
+      "stage": "week 20+",
+      "baby_effect": "immune support",
+      "mother_effect": "digestion",
+      "nutrients": ["vitamin C"],
+      "science": "immune health"
+    },
+    {
+      "id": 79,
+      "food": "Lychee",
+      "stage": "moderate",
+      "baby_effect": "hydration support",
+      "mother_effect": "vitamin intake",
+      "nutrients": ["vitamin C"],
+      "science": "immune system"
+    },
+    {
+      "id": 80,
+      "food": "Persimmon",
+      "stage": "week 20+",
+      "baby_effect": "growth support",
+      "mother_effect": "fiber intake",
+      "nutrients": ["fiber"],
+      "science": "digestion support"
+    },
+    {
+      "id": 81,
+      "food": "Chestnuts",
+      "stage": "week 20+",
+      "baby_effect": "energy supply",
+      "mother_effect": "low fat carbs",
+      "nutrients": ["carbs"],
+      "science": "energy metabolism"
+    },
+    {
+      "id": 82,
+      "food": "Macadamia nuts",
+      "stage": "week 12+",
+      "baby_effect": "brain support",
+      "mother_effect": "healthy fats",
+      "nutrients": ["omega fats"],
+      "science": "neural development"
+    },
+    {
+      "id": 83,
+      "food": "Pecans",
+      "stage": "week 12+",
+      "baby_effect": "cell protection",
+      "mother_effect": "antioxidants",
+      "nutrients": ["vitamin E"],
+      "science": "protects cells"
+    },
+    {
+      "id": 84,
+      "food": "Brazil nuts",
+      "stage": "limited",
+      "baby_effect": "thyroid support",
+      "mother_effect": "selenium intake",
+      "nutrients": ["selenium"],
+      "science": "hormone regulation"
+    },
+    {
+      "id": 85,
+      "food": "Cashews",
+      "stage": "week 15+",
+      "baby_effect": "bone growth",
+      "mother_effect": "magnesium",
+      "nutrients": ["magnesium"],
+      "science": "muscle + nerve function"
+    },
+    {
+      "id": 86,
+      "food": "Rice (brown)",
+      "stage": "all stages",
+      "baby_effect": "steady growth",
+      "mother_effect": "energy",
+      "nutrients": ["fiber"],
+      "science": "stable glucose"
+    },
+    {
+      "id": 87,
+      "food": "Millet",
+      "stage": "week 20+",
+      "baby_effect": "bone support",
+      "mother_effect": "iron intake",
+      "nutrients": ["iron"],
+      "science": "supports oxygen transport"
+    },
+    {
+      "id": 88,
+      "food": "Buckwheat",
+      "stage": "all stages",
+      "baby_effect": "growth support",
+      "mother_effect": "circulation",
+      "nutrients": ["rutin"],
+      "science": "vascular health"
+    },
+    {
+      "id": 89,
+      "food": "Amaranth",
+      "stage": "week 20+",
+      "baby_effect": "bone strength",
+      "mother_effect": "protein",
+      "nutrients": ["calcium"],
+      "science": "supports skeleton"
+    },
+    {
+      "id": 90,
+      "food": "Teff",
+      "stage": "week 20+",
+      "baby_effect": "blood development",
+      "mother_effect": "iron",
+      "nutrients": ["iron"],
+      "science": "prevents anemia"
+    },
+    {
+      "id": 91,
+      "food": "Molasses",
+      "stage": "week 20+",
+      "baby_effect": "blood support",
+      "mother_effect": "iron boost",
+      "nutrients": ["iron"],
+      "science": "natural iron source"
+    },
+    {
+      "id": 92,
+      "food": "Maple syrup",
+      "stage": "moderate",
+      "baby_effect": "energy",
+      "mother_effect": "mineral intake",
+      "nutrients": ["zinc"],
+      "science": "supports immunity"
+    },
+    {
+      "id": 93,
+      "food": "Honey",
+      "stage": "all stages",
+      "baby_effect": "indirect",
+      "mother_effect": "immune support",
+      "nutrients": ["antioxidants"],
+      "science": "natural antibacterial"
+    },
+    {
+      "id": 94,
+      "food": "Dark grapes",
+      "stage": "all stages",
+      "baby_effect": "brain protection",
+      "mother_effect": "circulation",
+      "nutrients": ["resveratrol"],
+      "science": "cell protection"
+    },
+    {
+      "id": 95,
+      "food": "Tangerines",
+      "stage": "week 10+",
+      "baby_effect": "immune system",
+      "mother_effect": "hydration",
+      "nutrients": ["vitamin C"],
+      "science": "immune support"
+    },
+    {
+      "id": 96,
+      "food": "Limes",
+      "stage": "all stages",
+      "baby_effect": "nutrient absorption",
+      "mother_effect": "digestion",
+      "nutrients": ["vitamin C"],
+      "science": "iron absorption"
+    },
+    {
+      "id": 97,
+      "food": "Grapefruit",
+      "stage": "moderate",
+      "baby_effect": "cell growth",
+      "mother_effect": "metabolism",
+      "nutrients": ["vitamin C"],
+      "science": "supports metabolism"
+    },
+    {
+      "id": 98,
+      "food": "Cucumber",
+      "stage": "all stages",
+      "baby_effect": "hydration",
+      "mother_effect": "reduces swelling",
+      "nutrients": ["water"],
+      "science": "fluid balance"
+    },
+    {
+      "id": 99,
+      "food": "Celery",
+      "stage": "all stages",
+      "baby_effect": "circulation",
+      "mother_effect": "hydration",
+      "nutrients": ["electrolytes"],
+      "science": "blood pressure support"
+    },
+    {
+      "id": 100,
+      "food": "Fennel",
+      "stage": "week 20+",
+      "baby_effect": "digestion support",
+      "mother_effect": "reduces bloating",
+      "nutrients": ["fiber"],
+      "science": "gut health"
+    }
+  ]
+}

@@ -34,7 +34,7 @@ export default function BottomNav() {
   }
 
   return (
-    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-card border-t border-border z-50">
+    <nav className="fixed bottom-0 sm:bottom-10 left-1/2 -translate-x-1/2 w-full max-w-full sm:max-w-[560px] sm:rounded-b-[28px] bg-card border-t border-border z-50">
       <div className="flex justify-around py-2">
         {navItems.map(item => {
           const active = isActive(item)

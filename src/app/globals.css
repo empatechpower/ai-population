@@ -6,9 +6,31 @@
 @layer base {
   body {
     @apply bg-bg text-primary font-sans antialiased;
-    max-width: 430px;
     margin: 0 auto;
     min-height: 100vh;
+  }
+}
+
+/* Above phone width, present the app as a centered card instead of
+   stretching the mobile layout edge-to-edge across the whole viewport.
+   The card look lives on .app-shell (not body/html) — putting
+   `overflow: hidden` directly on body would propagate to the viewport
+   per the CSS overflow-propagation quirk and disable page scrolling. */
+@media (min-width: 640px) {
+  html {
+    background: linear-gradient(180deg, #F6F1E8 0%, #EDE3D0 100%);
+    min-height: 100vh;
+  }
+  body {
+    max-width: 560px;
+    margin: 40px auto;
+  }
+  .app-shell {
+    min-height: calc(100vh - 80px);
+    border-radius: 28px;
+    border: 1px solid rgba(180, 155, 120, 0.18);
+    box-shadow: 0 24px 70px rgba(60, 45, 20, 0.14);
+    overflow: hidden;
   }
 }
 

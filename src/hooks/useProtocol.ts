@@ -1,14 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useAppStore } from "@/store/app";
-import { getProfile, getProtocol, getTodayProtocol } from "@/lib/data";
+import { getProfile, getTodayProtocol } from "@/lib/data";
 import { triggerGenerateProtocol } from "@/lib/workflows";
 import { getUserId } from "@/lib/auth";
 
 export function useProtocol() {
   const { profile, setProfile, setProtocol, protocol } = useAppStore();
   const [loading, setLoading] = useState(!protocol);
-  console.log("useProtocol - initial profile:");
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -45,7 +44,6 @@ export function useProtocol() {
 
         // 3️⃣ Check if today's protocol already exists
         const existing = await getTodayProtocol();
-        console.log("Existing protocol for today:", existing);
 
         if (
           existing &&

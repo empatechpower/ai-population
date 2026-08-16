@@ -99,11 +99,9 @@ export default function JourneyProtocolPage() {
       hasGenerated.current = true;
       setGenerating(true);
 
-      const res = await triggerGenerateJourney(uid);
-
-      // Parse AI response and create records
+      // Generate and create records
       try {
-        const parsed = JSON.parse(res.response.result);
+        const parsed = await triggerGenerateJourney(uid);
         const aiPhases = parsed.phases || [];
 
         const createdPhases = await Promise.all(

@@ -6,6 +6,7 @@ import { useAppStore } from "@/store/app";
 import { updateProfile } from "@/lib/data";
 import { triggerRecalibrate } from "@/lib/workflows";
 import { getUserId } from "@/lib/auth";
+import { auth } from "@/lib/firebase";
 import { lookupJob } from "@/data/job_index";
 import BottomNav from "@/components/shared/BottomNav";
 import LoadingScreen from "@/components/shared/LoadingScreen";
@@ -28,6 +29,13 @@ import {
 const GOLD = "#D4B06A";
 const SUCCESS = "#1F7A5A";
 const PURPLE = "#667EEA";
+
+const NUMERIC_BOUNDS: Record<string, { min: number; max: number }> = {
+  age: { min: 13, max: 60 },
+  height: { min: 100, max: 250 },
+  weight: { min: 30, max: 250 },
+  partner_age: { min: 13, max: 100 },
+};
 
 function getCtx(week: number, isPregnant: boolean) {
   if (isPregnant) {
@@ -89,7 +97,9 @@ function getCtx(week: number, isPregnant: boolean) {
 }
 
 export default function ProfilePage() {
-  useProfile();
+  // requireSubscription=false — this page hosts subscription management, so
+  // it must stay reachable even when the trial/subscription has lapsed.
+  useProfile(true, false);
   const { profile, protocol } = useAppStore();
   const router = useRouter();
 
@@ -102,13 +112,39 @@ export default function ProfilePage() {
     value: string;
   } | null>(null);
   const [editValue, setEditValue] = useState("");
+  const [editError, setEditError] = useState("");
   const [saving, setSaving] = useState(false);
   const [showWeekPicker, setShowWeekPicker] = useState(false);
   const [weekVal, setWeekVal] = useState(profile?.current_week ?? 1);
   const [savingWeek, setSavingWeek] = useState(false);
+  const [weekError, setWeekError] = useState("");
+  const [managingSubscription, setManagingSubscription] = useState(false);
+  const [subscriptionError, setSubscriptionError] = useState("");
+
+  async function handleManageSubscription() {
+    const uid = getUserId();
+    if (!uid) return;
+    setManagingSubscription(true);
+    setSubscriptionError("");
+    try {
+      const idToken = await auth.currentUser?.getIdToken();
+      const res = await fetch("/api/stripe/portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken}` },
+        body: JSON.stringify({ userId: uid }),
+      });
+      const body = await res.json();
+      if (!res.ok || !body.url) throw new Error(body.error || "Could not open billing portal");
+      window.location.href = body.url;
+    } catch (e: any) {
+      setSubscriptionError(e?.message || "Something went wrong. Please try again.");
+      setManagingSubscription(false);
+    }
+  }
 
   async function handleWeekSave(newWeek: number) {
     setSavingWeek(true);
+    setWeekError("");
     try {
       await updateProfile({ current_week: newWeek });
       // Recalibrate protocol with new week context
@@ -117,6 +153,7 @@ export default function ProfilePage() {
       setShowWeekPicker(false);
     } catch (e) {
       console.error(e);
+      setWeekError("Couldn't save changes. Please try again.");
     } finally {
       setSavingWeek(false);
     }
@@ -226,7 +263,6 @@ export default function ProfilePage() {
       val: profile.diet_type,
     },
   ];
-  console.log("profile:", profile);
   const PARTNER = [
     {
       key: "partner_age",
@@ -260,19 +296,41 @@ export default function ProfilePage() {
   function openEdit(key: string, label: string, type: string, val: string) {
     setEditField({ key, label, type, value: val });
     setEditValue(val);
+    setEditError("");
   }
+
+  const editBounds = editField ? NUMERIC_BOUNDS[editField.key] : undefined;
+  const editNumberInvalid =
+    editField?.type === "number" &&
+    (editValue.trim() === "" ||
+      !Number.isFinite(Number(editValue)) ||
+      (editBounds &&
+        (Number(editValue) < editBounds.min ||
+          Number(editValue) > editBounds.max)));
 
   async function saveEdit() {
     if (!editField) return;
+    if (editNumberInvalid) {
+      setEditError(
+        editBounds
+          ? `Enter a value between ${editBounds.min} and ${editBounds.max}`
+          : "Enter a valid number",
+      );
+      return;
+    }
     setSaving(true);
+    setEditError("");
     try {
       await updateProfile({
         [editField.key]:
-          editField.type === "number" ? Number(editValue) || 0 : editValue,
+          editField.type === "number" ? Number(editValue) : editValue,
       });
-    } catch {}
-    setSaving(false);
-    setEditField(null);
+      setEditField(null);
+    } catch {
+      setEditError("Couldn't save changes. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   function Card({ children }: { children: React.ReactNode }) {
@@ -742,6 +800,7 @@ export default function ProfilePage() {
                   <button
                     onClick={() => {
                       setWeekVal(profile.current_week ?? 1);
+                      setWeekError("");
                       setShowWeekPicker((v) => !v);
                     }}
                     style={{
@@ -865,6 +924,18 @@ export default function ProfilePage() {
                     >
                       {savingWeek ? "Saving & recalibrating…" : "Save Week"}
                     </button>
+                    {weekError && (
+                      <p
+                        style={{
+                          fontSize: 12,
+                          color: "#E57373",
+                          textAlign: "center",
+                          marginTop: 8,
+                        }}
+                      >
+                        {weekError}
+                      </p>
+                    )}
                     <p
                       style={{
                         fontSize: 11,
@@ -1337,6 +1408,33 @@ export default function ProfilePage() {
             Version 2.4.0
           </span>
         </div>
+
+        {/* ── Billing ── */}
+        <div style={{ marginTop: 24 }}>
+          <button
+            onClick={handleManageSubscription}
+            disabled={managingSubscription}
+            style={{
+              width: "100%",
+              background: "var(--card)",
+              border: "1px solid var(--border)",
+              borderRadius: 14,
+              padding: "16px 18px",
+              fontSize: 14,
+              fontWeight: 600,
+              color: "var(--text-primary)",
+              cursor: managingSubscription ? "not-allowed" : "pointer",
+              textAlign: "left",
+            }}
+          >
+            {managingSubscription ? "Opening billing portal..." : "Manage subscription"}
+          </button>
+          {subscriptionError && (
+            <p style={{ fontSize: 12, color: "#E57373", marginTop: 8, textAlign: "center" }}>
+              {subscriptionError}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* ── Edit modal ── */}
@@ -1359,7 +1457,7 @@ export default function ProfilePage() {
           <div
             style={{
               width: "100%",
-              maxWidth: 430,
+              maxWidth: 560,
               background: "var(--elevated)",
               borderRadius: "24px 24px 0 0",
               padding: "0 0 40px",
@@ -1430,21 +1528,37 @@ export default function ProfilePage() {
                 autoFocus
                 type={editField.type}
                 value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
+                onChange={(e) => {
+                  setEditValue(e.target.value);
+                  setEditError("");
+                }}
+                min={editBounds?.min}
+                max={editBounds?.max}
                 style={{
                   width: "100%",
                   padding: "14px 16px",
                   borderRadius: 14,
                   background: "var(--section-bg)",
-                  border: `1.5px solid ${GOLD}`,
+                  border: `1.5px solid ${editError ? "#E57373" : GOLD}`,
                   fontSize: 16,
                   color: "var(--text-primary)",
                   outline: "none",
                   fontFamily: "inherit",
                   boxSizing: "border-box" as const,
-                  marginBottom: 24,
+                  marginBottom: editError ? 8 : 24,
                 }}
               />
+              {editError && (
+                <p
+                  style={{
+                    fontSize: 12,
+                    color: "#E57373",
+                    marginBottom: 16,
+                  }}
+                >
+                  {editError}
+                </p>
+              )}
               <div style={{ display: "flex", gap: 10 }}>
                 <button
                   onClick={() => setEditField(null)}
@@ -1465,17 +1579,17 @@ export default function ProfilePage() {
                 </button>
                 <button
                   onClick={saveEdit}
-                  disabled={saving}
+                  disabled={saving || editNumberInvalid}
                   style={{
                     flex: 2,
                     padding: 14,
                     borderRadius: 14,
-                    background: GOLD,
+                    background: saving || editNumberInvalid ? `${GOLD}60` : GOLD,
                     border: "none",
                     color: "#fff",
                     fontSize: 15,
                     fontWeight: 500,
-                    cursor: "pointer",
+                    cursor: saving || editNumberInvalid ? "not-allowed" : "pointer",
                     fontFamily: "inherit",
                   }}
                 >

@@ -168,11 +168,9 @@ export default function JourneyPage() {
       hasGenerated.current = true;
       setGenerating(true);
 
-      const res = await triggerGenerateJourney(uid);
-
-      // 3. Parse AI response and create records in Bubble
+      // 3. Generate and create records
       try {
-        const parsed = JSON.parse(res.response.results);
+        const parsed = await triggerGenerateJourney(uid);
         const aiPhases = parsed.phases || [];
 
         const createdPhases = await Promise.all(
@@ -186,7 +184,6 @@ export default function JourneyPage() {
               week_range: p.week_range,
               status: p.status,
             });
-            console.log("Created phase:", phaseId);
             // Create all milestone records for this phase
             const milestones = await Promise.all(
               (p.milestones || []).map((m: any) =>
@@ -236,7 +233,6 @@ export default function JourneyPage() {
       setGenerating(false);
     }
   }
-  console.log("phase", phases);
   if (!profile || loading)
     return <LoadingScreen message="Loading your journey…" />;
 

@@ -222,7 +222,7 @@ export default function PostDetailPage({
       </div>
 
       {/* Reply input — fixed above bottom nav */}
-      <div className="fixed bottom-20 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-card border-t border-border px-5 py-3 z-40">
+      <div className="fixed bottom-20 sm:bottom-[120px] left-1/2 -translate-x-1/2 w-full max-w-full sm:max-w-[560px] bg-card border-t border-border px-5 py-3 z-40">
         <div className="flex gap-2.5 items-center">
           <input
             value={reply}

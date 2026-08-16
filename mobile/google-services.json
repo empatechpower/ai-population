@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "869082824060",
+    "project_id": "rogier-bc197",
+    "storage_bucket": "rogier-bc197.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:869082824060:android:b4f2fc27e82c2ef32178f9",
+        "android_client_info": {
+          "package_name": "com.rogier.bleom"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "869082824060-euoa6fo8qt7mpjs6ej600thqgjhnrfe8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJD-ZTgBvJcU3Z_8egFD9GICsry9O7H3s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "869082824060-euoa6fo8qt7mpjs6ej600thqgjhnrfe8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "869082824060-nnjhc84aaucepab2uhj52ou4c6gefhmj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.rogier.bleom"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

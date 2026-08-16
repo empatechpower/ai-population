@@ -117,9 +117,7 @@ export default function NutritionPage() {
         setGenerating(true);
 
         const userId = getUserId() ?? profile!._id;
-        const res = await triggerGenerateNutrition(userId, weekCtx, milkCtx);
-
-        const parsed = JSON.parse(res.response.result);
+        const parsed = await triggerGenerateNutrition(userId, weekCtx, milkCtx);
 
         // 4. Create meal records in Bubble — includes baby_benefit + mother_benefit
         const mealList = [

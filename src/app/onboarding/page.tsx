@@ -26,18 +26,46 @@ const checks = [
   "Supplement stack configured",
 ];
 
+// ── Validation bounds ───────────────────────────────────────────
+const AGE_RANGE = { min: 13, max: 60 };
+const PARTNER_AGE_RANGE = { min: 13, max: 100 };
+const HEIGHT_RANGE = { min: 100, max: 250 }; // cm
+const WEIGHT_RANGE = { min: 30, max: 250 }; // kg
+const PREGNANCY_WEEK_RANGE = { min: 1, max: 42 };
+const POSTPARTUM_WEEK_RANGE = { min: 0, max: 52 };
+const PREVIOUS_CHILDREN_RANGE = { min: 0, max: 20 };
+
+function inRange(value: string, range: { min: number; max: number }): boolean {
+  if (value.trim() === "") return false;
+  const n = Number(value);
+  return Number.isFinite(n) && n >= range.min && n <= range.max;
+}
+
+function inRangeOrEmpty(
+  value: string,
+  range: { min: number; max: number },
+): boolean {
+  return value.trim() === "" || inRange(value, range);
+}
+
 function InputField({
   label,
   value,
   onChange,
   type = "text",
   placeholder = "",
+  min,
+  max,
+  error,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   type?: string;
   placeholder?: string;
+  min?: number;
+  max?: number;
+  error?: string;
 }) {
   return (
     <div style={{ marginBottom: 20 }}>
@@ -59,10 +87,12 @@ function InputField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
+        min={min}
+        max={max}
         style={{
           width: "100%",
           background: CARD,
-          border: `1px solid ${BORDER}`,
+          border: `1px solid ${error ? "#E57373" : BORDER}`,
           borderRadius: 12,
           padding: "14px 16px",
           fontSize: 16,
@@ -72,6 +102,9 @@ function InputField({
           boxSizing: "border-box" as const,
         }}
       />
+      {error && (
+        <p style={{ fontSize: 12, color: "#E57373", marginTop: 6 }}>{error}</p>
+      )}
     </div>
   );
 }
@@ -249,6 +282,7 @@ export default function OnboardingPage() {
   const { data, setField } = useOnboarding();
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
   // const { data, setField } = useOnboarding();
   const [visible, setVisible] = useState<number[]>([]);
 
@@ -257,8 +291,8 @@ export default function OnboardingPage() {
       setTimeout(() => setVisible((v) => [...v, i]), 600 + i * 400);
     });
   }, []);
-  const [search, setSearch] = useState("");
-  const [mSearch, setmSearch] = useState("");
+  const [search, setSearch] = useState(data.job_type);
+  const [mSearch, setmSearch] = useState(data.partners_job_type);
 
   const [showJobList, setShowJobList] = useState(false);
   const [showPartnerJobList, setShowPartnerJobList] = useState(false);
@@ -289,6 +323,31 @@ export default function OnboardingPage() {
   const mfiltered = allMaleJobs
     .filter((j) => j.toLowerCase().includes(mSearch.toLowerCase()))
     .slice(0, 8);
+
+  // Reconciles free-typed search text against the job list on blur, so the
+  // visible text can never drift out of sync with the stored job_type value.
+  function reconcileJobSearch(
+    list: string[],
+    searchVal: string,
+    setSearchVal: (v: string) => void,
+    setJobField: (v: string) => void,
+    confirmedValue: string,
+  ) {
+    const trimmed = searchVal.trim();
+    if (trimmed === "") {
+      setJobField("");
+      return;
+    }
+    const match = list.find((j) => j.toLowerCase() === trimmed.toLowerCase());
+    if (match) {
+      setJobField(match);
+      setSearchVal(match);
+    } else {
+      // No exact match — discard the unconfirmed text
+      setSearchVal(confirmedValue);
+    }
+  }
+
   function next() {
     setStep((s) => Math.min(s + 1, TOTAL + 1));
   }
@@ -298,6 +357,7 @@ export default function OnboardingPage() {
 
   async function handleComplete() {
     setSaving(true);
+    setSaveError("");
     function joinOrEmpty(arr: string[] | undefined | null): string {
       if (!arr || arr.length === 0) return "";
       return arr.join(", ");
@@ -362,11 +422,15 @@ export default function OnboardingPage() {
 
       const uid = getUserId();
       if (uid) await triggerOnboardingComplete(uid);
+      setSaving(false);
+      next();
     } catch (e) {
       console.error(e);
+      setSaving(false);
+      setSaveError(
+        "We couldn't save your profile. Please check your connection and try again.",
+      );
     }
-    setSaving(false);
-    next();
   }
 
   // Step 7 = complete
@@ -532,7 +596,11 @@ export default function OnboardingPage() {
     );
 
   // Step 2 — Timeline
-  if (step === 2)
+  if (step === 2) {
+    const weekRange =
+      data.journey_type === "currently_pregnant"
+        ? PREGNANCY_WEEK_RANGE
+        : POSTPARTUM_WEEK_RANGE;
     return wrap(
       <>
         <div style={{ marginBottom: 32 }}>
@@ -579,10 +647,17 @@ export default function OnboardingPage() {
               value={data.current_week}
               onChange={(v) => setField("current_week", v)}
               type="number"
+              min={weekRange.min}
+              max={weekRange.max}
               placeholder={
                 data.journey_type === "currently_pregnant"
                   ? "e.g. 15"
                   : "e.g. 8"
+              }
+              error={
+                data.current_week && !inRange(data.current_week, weekRange)
+                  ? `Enter a number between ${weekRange.min} and ${weekRange.max}`
+                  : undefined
               }
             />
           ) : (
@@ -598,12 +673,30 @@ export default function OnboardingPage() {
             value={data.previous_children}
             onChange={(v) => setField("previous_children", v)}
             type="number"
+            min={PREVIOUS_CHILDREN_RANGE.min}
+            max={PREVIOUS_CHILDREN_RANGE.max}
+            error={
+              data.previous_children &&
+              !inRangeOrEmpty(data.previous_children, PREVIOUS_CHILDREN_RANGE)
+                ? `Enter a number between ${PREVIOUS_CHILDREN_RANGE.min} and ${PREVIOUS_CHILDREN_RANGE.max}`
+                : undefined
+            }
             placeholder="0"
           />
         </div>
-        <ContinueBtn onClick={next} />
+        <ContinueBtn
+          onClick={next}
+          disabled={
+            (data.journey_type === "currently_pregnant" ||
+            data.journey_type === "postpartum"
+              ? !inRange(data.current_week, weekRange)
+              : !data.target_conception_season.trim()) ||
+            !inRangeOrEmpty(data.previous_children, PREVIOUS_CHILDREN_RANGE)
+          }
+        />
       </>,
     );
+  }
 
   // Step 3 — About you
   if (step === 3)
@@ -651,21 +744,42 @@ export default function OnboardingPage() {
             value={data.age}
             onChange={(v) => setField("age", v)}
             type="number"
+            min={AGE_RANGE.min}
+            max={AGE_RANGE.max}
             placeholder="e.g. 29"
+            error={
+              data.age && !inRange(data.age, AGE_RANGE)
+                ? `Enter an age between ${AGE_RANGE.min} and ${AGE_RANGE.max}`
+                : undefined
+            }
           />
           <InputField
             label="Height (cm)"
             value={data.height}
             onChange={(v) => setField("height", v)}
             type="number"
+            min={HEIGHT_RANGE.min}
+            max={HEIGHT_RANGE.max}
             placeholder="e.g. 165"
+            error={
+              data.height && !inRangeOrEmpty(data.height, HEIGHT_RANGE)
+                ? `Enter a height between ${HEIGHT_RANGE.min} and ${HEIGHT_RANGE.max} cm`
+                : undefined
+            }
           />
           <InputField
             label="Weight (kg)"
             value={data.weight}
             onChange={(v) => setField("weight", v)}
             type="number"
+            min={WEIGHT_RANGE.min}
+            max={WEIGHT_RANGE.max}
             placeholder="e.g. 63"
+            error={
+              data.weight && !inRangeOrEmpty(data.weight, WEIGHT_RANGE)
+                ? `Enter a weight between ${WEIGHT_RANGE.min} and ${WEIGHT_RANGE.max} kg`
+                : undefined
+            }
           />
           <InputField
             label="Nationality"
@@ -674,7 +788,15 @@ export default function OnboardingPage() {
             placeholder="e.g. Swiss"
           />
         </div>
-        <ContinueBtn onClick={next} disabled={!data.first_name || !data.age} />
+        <ContinueBtn
+          onClick={next}
+          disabled={
+            !data.first_name.trim() ||
+            !inRange(data.age, AGE_RANGE) ||
+            !inRangeOrEmpty(data.height, HEIGHT_RANGE) ||
+            !inRangeOrEmpty(data.weight, WEIGHT_RANGE)
+          }
+        />
       </>,
     );
 
@@ -774,6 +896,16 @@ export default function OnboardingPage() {
                 setShowJobList(true);
               }}
               onFocus={() => setShowJobList(true)}
+              onBlur={() => {
+                setShowJobList(false);
+                reconcileJobSearch(
+                  allFemaleJobs,
+                  search,
+                  setSearch,
+                  (v) => setField("job_type", v),
+                  data.job_type,
+                );
+              }}
             />
 
             {showJobList && filtered.length > 0 && (
@@ -782,6 +914,7 @@ export default function OnboardingPage() {
                   <button
                     key={job}
                     className="w-full text-left px-4 py-2.5 text-sm text-charcoal hover:bg-gold-light transition-colors"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => {
                       setField("job_type", job);
                       setSearch(job);
@@ -901,18 +1034,36 @@ export default function OnboardingPage() {
             value={data.partner_age}
             onChange={(v) => setField("partner_age", v)}
             type="number"
+            min={PARTNER_AGE_RANGE.min}
+            max={PARTNER_AGE_RANGE.max}
             placeholder="e.g. 32"
+            error={
+              data.partner_age &&
+              !inRangeOrEmpty(data.partner_age, PARTNER_AGE_RANGE)
+                ? `Enter an age between ${PARTNER_AGE_RANGE.min} and ${PARTNER_AGE_RANGE.max}`
+                : undefined
+            }
           />
           <div className="relative">
             <Input
               label="Partner Job"
               placeholder="Type to search..."
-              value={mSearch} // ✅ FIXED
+              value={mSearch}
               onChange={(e) => {
                 setmSearch(e.target.value);
                 setShowPartnerJobList(true);
               }}
               onFocus={() => setShowPartnerJobList(true)}
+              onBlur={() => {
+                setShowPartnerJobList(false);
+                reconcileJobSearch(
+                  allMaleJobs,
+                  mSearch,
+                  setmSearch,
+                  (v) => setField("partners_job_type", v),
+                  data.partners_job_type,
+                );
+              }}
             />
 
             {showPartnerJobList && mfiltered.length > 0 && (
@@ -921,6 +1072,7 @@ export default function OnboardingPage() {
                   <button
                     key={job}
                     className="w-full text-left px-4 py-2.5 text-sm text-charcoal hover:bg-gold-light transition-colors"
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => {
                       setField("partners_job_type", job);
                       setmSearch(job);
@@ -946,6 +1098,18 @@ export default function OnboardingPage() {
             placeholder="e.g. Moderate"
           />
         </div>
+        {saveError && (
+          <p
+            style={{
+              fontSize: 13,
+              color: "#E57373",
+              marginBottom: 12,
+              textAlign: "center",
+            }}
+          >
+            {saveError}
+          </p>
+        )}
         <div style={{ display: "flex", gap: 12 }}>
           <button
             onClick={handleComplete}
@@ -959,7 +1123,7 @@ export default function OnboardingPage() {
               fontSize: 15,
               fontWeight: 500,
               color: TEXT_SECONDARY,
-              cursor: "pointer",
+              cursor: saving ? "not-allowed" : "pointer",
               fontFamily: "inherit",
             }}
           >

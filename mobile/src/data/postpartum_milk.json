@@ -1,0 +1,67 @@
+{
+  "postpartum_milk_optimization": {
+    "concept": {
+      "core_logic": "Breast milk is produced from the mother's blood. Blood quality directly determines milk quality and therefore baby development. Every food recommendation should explain: (1) how it improves the mother's blood, (2) how that improves the milk, (3) what the baby receives through the milk.",
+      "goals": [
+        "increase nutrient density in blood",
+        "support milk production",
+        "optimize baby development through milk",
+        "restore maternal health after birth"
+      ]
+    },
+    "key_nutrients": [
+      { "name": "Iron",            "role_mother": "rebuilds blood after birth",              "role_milk": "improves oxygen transport nutrients",   "benefit_baby": "supports brain and growth" },
+      { "name": "Omega-3 DHA",     "role_mother": "improves blood fat quality",              "role_milk": "enriches milk fats",                    "benefit_baby": "brain and eye development" },
+      { "name": "Choline",         "role_mother": "supports brain and blood function",       "role_milk": "increases cognitive nutrients",          "benefit_baby": "nervous system development" },
+      { "name": "Vitamin B complex","role_mother": "improves energy and blood metabolism",   "role_milk": "supports milk nutrient profile",        "benefit_baby": "nervous system and metabolism" },
+      { "name": "Vitamin A",       "role_mother": "supports immune system",                  "role_milk": "enriches milk quality",                 "benefit_baby": "immune and vision development" },
+      { "name": "Protein",         "role_mother": "repairs tissue and blood",                "role_milk": "improves milk structure",               "benefit_baby": "growth and muscle development" },
+      { "name": "Iodine",          "role_mother": "supports thyroid",                        "role_milk": "regulates hormones in milk",            "benefit_baby": "brain development" },
+      { "name": "Zinc",            "role_mother": "supports healing",                        "role_milk": "improves immune factors",               "benefit_baby": "immune system" }
+    ],
+    "blood_optimization": {
+      "importance": "Blood quality directly determines milk quality",
+      "actions": [
+        "increase iron intake",
+        "ensure hydration (2.5–3L daily)",
+        "consume omega-3 fats",
+        "avoid inflammatory foods",
+        "support circulation"
+      ]
+    },
+    "blood_thinning_support": {
+      "context": "Blood becomes thicker during pregnancy",
+      "goal": "normalize blood flow postpartum",
+      "supporting_foods": ["garlic", "ginger", "turmeric", "omega-3 rich foods (fish, walnuts)", "hydration"],
+      "effect": "improves circulation → better nutrient transport to milk"
+    },
+    "milk_boosting_foods": [
+      { "food": "oats",   "effect": "stimulates milk production (prolactin)" },
+      { "food": "fennel", "effect": "supports milk flow" },
+      { "food": "dates",  "effect": "restore blood + increase energy in milk" },
+      { "food": "eggs",   "effect": "increase choline for baby brain via milk" },
+      { "food": "salmon", "effect": "increase DHA in milk for brain and eye development" }
+    ],
+    "evening_feeding": {
+      "note": "Evening and night breastfeeding sessions are the most hormonally productive. Prolactin — the hormone that drives milk production — peaks between 2AM and 6AM. Night feeding directly stimulates the next day's milk supply.",
+      "foods": ["turkey", "oats", "bananas"],
+      "reason": "tryptophan-rich foods support maternal sleep quality and calm baby behaviour during night feeds",
+      "supplement": "magnesium in the evening meal supports relaxation and deeper sleep between feeds"
+    },
+    "oral_health": {
+      "note": "The mother's oral microbiome is directly transferred to the baby during feeding, kissing, and shared environments. Harmful oral bacteria can colonise the baby's developing gut and oral cavity.",
+      "recommended_foods": ["yogurt", "kefir", "sauerkraut"],
+      "key_nutrients": ["vitamin C", "calcium", "phosphorus"]
+    },
+    "environment": {
+      "note": "Birth environment influences postpartum hormonal recovery. Skin-to-skin contact in calm environments elevates oxytocin which directly boosts milk letdown. Stress hormones suppress prolactin and reduce milk supply.",
+      "calming_foods": ["oats", "dark leafy greens", "chamomile tea", "walnuts"],
+      "key_nutrients": ["magnesium", "B vitamins"]
+    },
+    "electrical": {
+      "note": "Prolonged proximity to wireless devices and screens increases cortisol and disrupts melatonin production — both negatively affect milk supply and sleep quality.",
+      "melatonin_foods": ["cherries", "walnuts", "oats", "bananas"],
+      "antioxidant_foods": ["blueberries", "pomegranate", "dark chocolate"]
+    }
+  }
+}

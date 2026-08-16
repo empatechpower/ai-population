@@ -79,7 +79,6 @@ export default function PregnancyPage() {
     try {
       // 1. Check existing
       const existing = await getWeekDetail(week);
-      console.log("Existing week detail:", existing);
 
       if (isValidObject(existing)) {
         setWeekDetail(existing);
@@ -91,16 +90,7 @@ export default function PregnancyPage() {
       hasGenerated.current = true;
       setGenerating(true);
 
-      const res = await triggerGenerateWeekDetail();
-
-      // 3. Parse AI safely
-      let parsed;
-      try {
-        parsed = parseAI(res?.response?.results);
-      } catch (e) {
-        console.error("Failed to parse week detail:", res?.response?.results);
-        throw e;
-      }
+      const parsed = await triggerGenerateWeekDetail();
 
       // 4. Validate structure (VERY IMPORTANT)
       if (!parsed || typeof parsed !== "object") {
