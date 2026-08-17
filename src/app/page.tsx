@@ -8,6 +8,7 @@ import {
   requestPasswordReset,
   signInWithGoogle,
   completeGoogleRedirect,
+  isEmailVerified,
 } from "@/lib/auth";
 import { getProfile } from "@/lib/data";
 import { auth } from "@/lib/firebase";
@@ -46,6 +47,10 @@ export default function LandingPage() {
       .then((result) => {
         if (result) {
           handled = true;
+          if (!isEmailVerified()) {
+            router.push("/verify-email");
+            return;
+          }
           router.push(result.isNewUser ? "/onboarding" : "/dashboard");
         }
       })
@@ -58,6 +63,10 @@ export default function LandingPage() {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (handled || !user) return;
       handled = true;
+      if (!user.emailVerified) {
+        router.push("/verify-email");
+        return;
+      }
       try {
         await getProfile();
         router.push("/dashboard");
@@ -82,7 +91,7 @@ export default function LandingPage() {
     setError("");
     try {
       await signUp(email.trim(), password);
-      router.push("/onboarding");
+      router.push("/verify-email");
     } catch (e: any) {
       setError(e?.message || "Could not create account. Please try again.");
     } finally {
@@ -97,7 +106,7 @@ export default function LandingPage() {
     setError("");
     try {
       await logIn(email.trim(), password);
-      router.push("/dashboard");
+      router.push(isEmailVerified() ? "/dashboard" : "/verify-email");
     } catch (e: any) {
       setError(e?.message || "Invalid email or password.");
     } finally {

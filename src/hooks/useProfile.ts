@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useAppStore } from "@/store/app";
 import { getProfile } from "@/lib/data";
-import { isLoggedIn } from "@/lib/auth";
+import { isLoggedIn, isEmailVerified } from "@/lib/auth";
 import { hasActiveAccess } from "@/lib/subscription";
 import { useRouter } from "next/navigation";
 
@@ -16,6 +16,10 @@ export function useProfile(redirectIfLoggedOut = true, requireSubscription = tru
   useEffect(() => {
     if (!isLoggedIn()) {
       if (redirectIfLoggedOut) router.push("/");
+      return;
+    }
+    if (!isEmailVerified()) {
+      router.push("/verify-email");
       return;
     }
     if (profile) {

@@ -3,6 +3,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
+  sendEmailVerification,
+  reload,
   signOut,
   onAuthStateChanged,
   signInWithCredential,
@@ -72,10 +74,41 @@ function friendlyMessage(err: unknown, fallback: string): string {
 export async function signUp(email: string, password: string) {
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
+    try {
+      await sendEmailVerification(cred.user);
+    } catch (err) {
+      // Don't fail account creation over this — the verify-email screen's
+      // resend button covers the case where the initial send fails.
+      console.error("[auth] failed to send verification email", err);
+    }
     return { userId: cred.user.uid };
   } catch (err) {
     throw new Error(friendlyMessage(err, "Could not create account"));
   }
+}
+
+// ── Email verification ──────────────────────────────────────────
+export async function resendVerificationEmail() {
+  if (!auth.currentUser) throw new Error("Not signed in");
+  try {
+    await sendEmailVerification(auth.currentUser);
+  } catch (err) {
+    throw new Error(friendlyMessage(err, "Could not send verification email"));
+  }
+}
+
+// Reloads the current user from Firebase so a just-clicked verification
+// link is reflected, then returns the fresh emailVerified value.
+export async function checkEmailVerified(): Promise<boolean> {
+  if (!auth.currentUser) return false;
+  await reload(auth.currentUser);
+  return auth.currentUser.emailVerified;
+}
+
+// Synchronous, cached read — safe to use for route-guard checks that can't
+// await a network round trip.
+export function isEmailVerified(): boolean {
+  return auth.currentUser?.emailVerified ?? false;
 }
 
 // ── Log in ────────────────────────────────────────────────────

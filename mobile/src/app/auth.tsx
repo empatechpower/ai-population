@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { router } from "expo-router";
-import { logIn, signUp, signInWithGoogle } from "@/lib/auth";
+import { logIn, signUp, signInWithGoogle, isEmailVerified } from "@/lib/auth";
 
 function GoogleLogo() {
   return (
@@ -64,7 +64,7 @@ export default function AuthScreen() {
     setError("");
     try {
       await signUp(email.trim(), password);
-      router.replace("/onboarding");
+      router.replace("/verify-email");
     } catch (e: any) {
       setError(e?.message || "Could not create account. Please try again.");
     } finally {
@@ -79,7 +79,7 @@ export default function AuthScreen() {
     setError("");
     try {
       await logIn(email.trim(), password);
-      router.replace("/(tabs)");
+      router.replace(isEmailVerified() ? "/(tabs)" : "/verify-email");
     } catch (e: any) {
       setError(e?.message || "Login failed. Please try again.");
     } finally {
@@ -92,6 +92,10 @@ export default function AuthScreen() {
     setError("");
     try {
       const { isNewUser } = await signInWithGoogle();
+      if (!isEmailVerified()) {
+        router.replace("/verify-email");
+        return;
+      }
       router.replace(isNewUser ? "/onboarding" : "/(tabs)");
     } catch (e: any) {
       setError(e?.message || "Google sign-in failed. Please try again.");

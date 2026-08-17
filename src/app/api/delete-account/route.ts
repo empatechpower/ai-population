@@ -22,7 +22,10 @@ export async function POST(req: NextRequest) {
   if (!userId) {
     return NextResponse.json({ error: "Missing userId" }, { status: 400 });
   }
-  if (!(await verifyRequestUser(req, userId))) {
+  // requireVerified: false — account deletion must stay reachable even for
+  // an unverified account (e.g. someone who signed up, never verified, and
+  // just wants out).
+  if (!(await verifyRequestUser(req, userId, { requireVerified: false }))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

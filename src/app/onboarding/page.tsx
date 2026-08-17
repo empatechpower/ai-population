@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import { useOnboarding } from "@/store/onboarding";
 import { updateProfile } from "@/lib/data";
 import { triggerOnboardingComplete } from "@/lib/workflows";
@@ -361,6 +363,26 @@ export default function OnboardingPage() {
   // const { data, setField } = useOnboarding();
   const [visible, setVisible] = useState<number[]>([]);
 
+  // Onboarding is only reachable by a logged-in, verified user — anyone else
+  // gets bounced to the landing page or the verification gate. authChecked
+  // holds the wizard off-screen until the first auth check resolves, so an
+  // unverified user never sees so much as a flash of onboarding content.
+  const [authChecked, setAuthChecked] = useState(false);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push("/");
+        return;
+      }
+      if (!user.emailVerified) {
+        router.push("/verify-email");
+        return;
+      }
+      setAuthChecked(true);
+    });
+    return () => unsubscribe();
+  }, []);
+
   useEffect(() => {
     checks.forEach((_, i) => {
       setTimeout(() => setVisible((v) => [...v, i]), 600 + i * 400);
@@ -513,6 +535,8 @@ export default function OnboardingPage() {
       );
     }
   }
+
+  if (!authChecked) return <div style={{ minHeight: "100vh", background: BG }} />;
 
   // Step 7 = complete
   if (step === TOTAL + 1) {

@@ -8,8 +8,10 @@ import {
   View,
 } from "react-native";
 import { router } from "expo-router";
+import { onAuthStateChanged } from "firebase/auth";
 import { ChevronLeft, Leaf, Sun, Moon, Check } from "lucide-react-native";
 
+import { auth } from "@/lib/firebase";
 import { useOnboarding } from "@/store/onboarding";
 import { updateProfile } from "@/lib/data";
 import { triggerOnboardingComplete } from "@/lib/workflows";
@@ -160,6 +162,25 @@ export default function OnboardingScreen() {
   const [saveError, setSaveError] = useState("");
   const [visible, setVisible] = useState<number[]>([]);
 
+  // Onboarding is only reachable by a logged-in, verified user — anyone else
+  // gets bounced to the auth screen or the verification gate. authChecked
+  // holds the wizard off-screen until the first auth check resolves.
+  const [authChecked, setAuthChecked] = useState(false);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.replace("/auth");
+        return;
+      }
+      if (!user.emailVerified) {
+        router.replace("/verify-email");
+        return;
+      }
+      setAuthChecked(true);
+    });
+    return () => unsubscribe();
+  }, []);
+
   useEffect(() => {
     if (step !== TOTAL + 1) return;
     const timers = CHECKS.map((_, i) =>
@@ -294,6 +315,8 @@ export default function OnboardingScreen() {
       setSaveError(`We couldn't save your profile. Please check your connection and try again. (${detail})`);
     }
   }
+
+  if (!authChecked) return <View className="flex-1 bg-bg" />;
 
   // Step 7 — Calibrated / complete
   if (step === TOTAL + 1) {

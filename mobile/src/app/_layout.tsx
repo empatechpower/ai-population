@@ -24,6 +24,7 @@ export default function RootLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="auth" />
+      <Stack.Screen name="verify-email" />
       <Stack.Screen name="onboarding" />
       <Stack.Screen name="profile" options={{ headerShown: true, title: "Profile" }} />
     </Stack>
