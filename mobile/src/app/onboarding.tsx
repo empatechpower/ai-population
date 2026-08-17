@@ -251,7 +251,8 @@ export default function OnboardingScreen() {
     } catch (e) {
       console.error(e);
       setSaving(false);
-      setSaveError("We couldn't save your profile. Please check your connection and try again.");
+      const detail = e instanceof Error ? e.message : String(e);
+      setSaveError(`We couldn't save your profile. Please check your connection and try again. (${detail})`);
     }
   }
 

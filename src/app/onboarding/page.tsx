@@ -427,8 +427,9 @@ export default function OnboardingPage() {
     } catch (e) {
       console.error(e);
       setSaving(false);
+      const detail = e instanceof Error ? e.message : String(e);
       setSaveError(
-        "We couldn't save your profile. Please check your connection and try again.",
+        `We couldn't save your profile. Please check your connection and try again. (${detail})`,
       );
     }
   }

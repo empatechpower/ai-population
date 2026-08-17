@@ -21,7 +21,8 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.rogier.bleom",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "versionCode": 2
     },
     "web": {
       "output": "static",
@@ -42,6 +43,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b9e54a53-6018-463e-a7aa-5daaf7931367"
+      }
+    },
+    "owner": "empatech"
   }
 }
