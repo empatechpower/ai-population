@@ -183,24 +183,16 @@ export default function ProfilePage() {
     }
   }
 
-  if (!profile) return <LoadingScreen message="Loading your profile..." />;
-
-  const jt = profile.journey_type ?? "trying_to_conceive";
-  const isPregnant = jt === "currently_pregnant";
-  const isPostpartum = jt === "postpartum";
-  const name = profile.first_name || "You";
-  const initials = name.slice(0, 2).toUpperCase();
-
-  // Job intelligence
-  // const femaleJob = lookupJob(profile.job_type ?? "", "female");
-  // const maleJob = lookupJob(profile.partners_job_type ?? "", "male");
+  // Job intelligence — must stay above the `!profile` early return below so
+  // hook order never changes between the loading and loaded renders.
   const [femaleJob, setFemaleJob] = useState<any>(() =>
-    lookupJob(profile.job_type ?? "", "female"),
+    lookupJob(profile?.job_type ?? "", "female"),
   );
   const [maleJob, setMaleJob] = useState<any>(() =>
-    lookupJob(profile.partners_job_type ?? "", "male"),
+    lookupJob(profile?.partners_job_type ?? "", "male"),
   );
   useEffect(() => {
+    if (!profile) return;
     import("@/lib/datasets").then(({ lookupJobDynamic }) => {
       lookupJobDynamic(profile.job_type ?? "", "female")
         .then((r) => r && setFemaleJob(r))
@@ -209,7 +201,16 @@ export default function ProfilePage() {
         .then((r) => r && setMaleJob(r))
         .catch(() => {});
     });
-  }, [profile.job_type, profile.partners_job_type]);
+  }, [profile?.job_type, profile?.partners_job_type]);
+
+  if (!profile) return <LoadingScreen message="Loading your profile..." />;
+
+  const jt = profile.journey_type ?? "trying_to_conceive";
+  const isPregnant = jt === "currently_pregnant";
+  const isPostpartum = jt === "postpartum";
+  const name = profile.first_name || "You";
+  const initials = name.slice(0, 2).toUpperCase();
+
   const STATUS_MAP: Record<
     string,
     { label: string; desc: string; icon: React.ReactNode; color: string }
