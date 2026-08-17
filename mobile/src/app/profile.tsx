@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { router } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import Slider from "@react-native-community/slider";
 import { ChevronLeft, ChevronRight, X, Leaf, Sun, Moon, User, Users } from "lucide-react-native";
 
@@ -9,8 +10,11 @@ import { useAppStore } from "@/store/app";
 import { updateProfile } from "@/lib/data";
 import { triggerRecalibrate } from "@/lib/workflows";
 import { getUserId, logOut } from "@/lib/auth";
+import { auth } from "@/lib/firebase";
 import { lookupJob } from "@/data/job_index";
 import LoadingScreen from "@/components/shared/LoadingScreen";
+
+const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 const GOLD = "#D4B06A";
 const SUCCESS = "#1F7A5A";
@@ -70,6 +74,38 @@ export default function ProfileScreen() {
 
   const [femaleJob, setFemaleJob] = useState<any>(null);
   const [maleJob, setMaleJob] = useState<any>(null);
+  const [deletingAccount, setDeletingAccount] = useState(false);
+
+  async function deleteAccount() {
+    const uid = getUserId();
+    if (!uid) return;
+    setDeletingAccount(true);
+    try {
+      const idToken = await auth.currentUser?.getIdToken();
+      const res = await fetch(`${API_BASE}/api/delete-account`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken}` },
+        body: JSON.stringify({ userId: uid }),
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error || "Could not delete account");
+      await logOut();
+    } catch (e: any) {
+      setDeletingAccount(false);
+      Alert.alert("Couldn't delete account", e?.message || "Please try again.");
+    }
+  }
+
+  function confirmDeleteAccount() {
+    Alert.alert(
+      "Delete account?",
+      "This permanently deletes your profile, protocol, meals, movement plans, journey data, and community posts. This can't be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Delete", style: "destructive", onPress: deleteAccount },
+      ],
+    );
+  }
 
   useEffect(() => {
     if (!profile) return;
@@ -513,12 +549,19 @@ export default function ProfileScreen() {
         <SectionLabel>Data & Privacy</SectionLabel>
         <View className="bg-card rounded-[18px] border border-border overflow-hidden">
           {[
-            ["Privacy Policy", "How we protect your data"],
-            ["Terms of Service", "Usage agreement"],
-            ["Data Usage Transparency", "What we collect and why"],
-          ].map(([label, detail], i) => (
+            {
+              label: "Privacy Policy",
+              detail: "How we protect your data",
+              onPress: () => WebBrowser.openBrowserAsync("https://ai-population.com/privacy"),
+            },
+            { label: "Terms of Service", detail: "Usage agreement", onPress: undefined },
+            { label: "Data Usage Transparency", detail: "What we collect and why", onPress: undefined },
+          ].map(({ label, detail, onPress }, i) => (
             <View key={label} style={{ borderBottomWidth: i < 2 ? 1 : 0, borderBottomColor: "rgba(180,155,120,0.15)" }}>
-              <Pressable className="flex-row items-center justify-between px-4 py-3.5">
+              <Pressable
+                className="flex-row items-center justify-between px-4 py-3.5"
+                onPress={onPress}
+              >
                 <View>
                   <Text className="text-sm text-primary">{label}</Text>
                   <Text className="text-xs text-muted mt-0.5">{detail}</Text>
@@ -531,6 +574,16 @@ export default function ProfileScreen() {
 
         <Pressable onPress={() => logOut()} className="mt-6 py-3.5 rounded-2xl items-center border border-border">
           <Text className="text-secondary font-medium text-base">Log out</Text>
+        </Pressable>
+
+        <Pressable
+          onPress={confirmDeleteAccount}
+          disabled={deletingAccount}
+          className="mt-3 py-3.5 items-center"
+        >
+          <Text className="font-medium text-sm" style={{ color: "#E57373" }}>
+            {deletingAccount ? "Deleting..." : "Delete account"}
+          </Text>
         </Pressable>
 
         <View className="items-center mt-8 mb-4">

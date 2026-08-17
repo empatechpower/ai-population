@@ -5,7 +5,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useAppStore } from "@/store/app";
 import { updateProfile } from "@/lib/data";
 import { triggerRecalibrate } from "@/lib/workflows";
-import { getUserId } from "@/lib/auth";
+import { getUserId, logOut } from "@/lib/auth";
 import { auth } from "@/lib/firebase";
 import { lookupJob } from "@/data/job_index";
 import BottomNav from "@/components/shared/BottomNav";
@@ -120,6 +120,30 @@ export default function ProfilePage() {
   const [weekError, setWeekError] = useState("");
   const [managingSubscription, setManagingSubscription] = useState(false);
   const [subscriptionError, setSubscriptionError] = useState("");
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+
+  async function handleDeleteAccount() {
+    const uid = getUserId();
+    if (!uid) return;
+    setDeletingAccount(true);
+    setDeleteError("");
+    try {
+      const idToken = await auth.currentUser?.getIdToken();
+      const res = await fetch("/api/delete-account", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken}` },
+        body: JSON.stringify({ userId: uid }),
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error || "Could not delete account");
+      await logOut();
+    } catch (e: any) {
+      setDeleteError(e?.message || "Something went wrong. Please try again.");
+      setDeletingAccount(false);
+    }
+  }
 
   async function handleManageSubscription() {
     const uid = getUserId();
@@ -1433,6 +1457,81 @@ export default function ProfilePage() {
             <p style={{ fontSize: 12, color: "#E57373", marginTop: 8, textAlign: "center" }}>
               {subscriptionError}
             </p>
+          )}
+        </div>
+
+        {/* ── Danger zone ── */}
+        <div style={{ marginTop: 12 }}>
+          {!confirmingDelete ? (
+            <button
+              onClick={() => setConfirmingDelete(true)}
+              style={{
+                width: "100%",
+                background: "transparent",
+                border: "none",
+                padding: "16px 18px",
+                fontSize: 13,
+                fontWeight: 500,
+                color: "#E57373",
+                cursor: "pointer",
+                textAlign: "left",
+              }}
+            >
+              Delete account
+            </button>
+          ) : (
+            <div
+              style={{
+                background: "var(--card)",
+                border: "1px solid #E5737340",
+                borderRadius: 14,
+                padding: "16px 18px",
+              }}
+            >
+              <p style={{ fontSize: 13, color: "var(--text-primary)", marginBottom: 12, lineHeight: 1.6 }}>
+                This permanently deletes your profile, protocol, meals, movement plans, journey
+                data, and community posts. This can't be undone.
+              </p>
+              <div style={{ display: "flex", gap: 10 }}>
+                <button
+                  onClick={() => setConfirmingDelete(false)}
+                  disabled={deletingAccount}
+                  style={{
+                    flex: 1,
+                    background: "transparent",
+                    border: "1px solid var(--border)",
+                    borderRadius: 10,
+                    padding: "10px",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: "var(--text-primary)",
+                    cursor: deletingAccount ? "not-allowed" : "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={deletingAccount}
+                  style={{
+                    flex: 1,
+                    background: "#E57373",
+                    border: "none",
+                    borderRadius: 10,
+                    padding: "10px",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: "#fff",
+                    cursor: deletingAccount ? "not-allowed" : "pointer",
+                  }}
+                >
+                  {deletingAccount ? "Deleting..." : "Yes, delete my account"}
+                </button>
+              </div>
+              {deleteError && (
+                <p style={{ fontSize: 12, color: "#E57373", marginTop: 10 }}>{deleteError}</p>
+              )}
+            </div>
           )}
         </div>
       </div>
