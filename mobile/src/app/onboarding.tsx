@@ -15,6 +15,7 @@ import { updateProfile } from "@/lib/data";
 import { triggerOnboardingComplete } from "@/lib/workflows";
 import { getUserId } from "@/lib/auth";
 import { getAllJobTitles, Job, lookupJob } from "@/data/job_index";
+import { COUNTRIES } from "@/data/countries";
 import Input from "@/components/shared/Input";
 import Button from "@/components/shared/Button";
 import RadioCard from "@/components/shared/RadioCard";
@@ -35,9 +36,29 @@ const WEIGHT_RANGE = { min: 30, max: 250 };
 const PREGNANCY_WEEK_RANGE = { min: 1, max: 42 };
 const POSTPARTUM_WEEK_RANGE = { min: 0, max: 52 };
 const PREVIOUS_CHILDREN_RANGE = { min: 0, max: 20 };
+const CURRENT_YEAR = new Date().getFullYear();
+const CONCEPTION_YEAR_RANGE = { min: CURRENT_YEAR, max: CURRENT_YEAR + 5 };
+
+const ACTIVITY_LEVELS = ["Sedentary", "Light", "Moderate", "Active", "Very Active"];
+const DIET_TYPES = ["Omnivore", "Vegetarian", "Vegan", "Pescatarian", "Gluten-free"];
+const TARGET_SEASONS = ["Spring", "Summer", "Fall", "Winter"];
+const SUN_EXPOSURE_LEVELS = [
+  { label: "Minimal", desc: "Rarely outdoors, mostly indoor lifestyle" },
+  { label: "Low", desc: "A few minutes daily, mostly indirect light" },
+  { label: "Moderate", desc: "Daily outdoor time, some direct sun" },
+  { label: "High", desc: "Extended outdoor time most days" },
+  { label: "Very High", desc: "Outdoors most of the day, direct sun" },
+];
 
 function toNumber(value: string): number {
   return Number(value.trim().replace(",", "."));
+}
+
+function parseConceptionTarget(value: string): { season: string; year: string } {
+  const parts = value.trim().split(/\s+/);
+  const season = TARGET_SEASONS.find((s) => s === parts[0]) ?? "";
+  const year = parts[1] && /^\d{4}$/.test(parts[1]) ? parts[1] : "";
+  return { season, year };
 }
 
 function inRange(value: string, range: { min: number; max: number }): boolean {
@@ -79,7 +100,7 @@ function StepTitle({ eyebrow, title, subtitle }: { eyebrow: string; title: strin
   );
 }
 
-function JobSearchField({
+function SearchSelectField({
   label,
   search,
   onSearchChange,
@@ -91,7 +112,7 @@ function JobSearchField({
   search: string;
   onSearchChange: (v: string) => void;
   suggestions: string[];
-  onPick: (job: string) => void;
+  onPick: (value: string) => void;
   onReconcile: () => void;
 }) {
   const [focused, setFocused] = useState(false);
@@ -115,13 +136,13 @@ function JobSearchField({
       {focused && filtered.length > 0 && (
         <View className="bg-white border border-border rounded-xl -mt-3 mb-2 max-h-48 overflow-hidden">
           <ScrollView keyboardShouldPersistTaps="handled">
-            {filtered.map((job) => (
+            {filtered.map((item) => (
               <Pressable
-                key={job}
-                onPress={() => onPick(job)}
+                key={item}
+                onPress={() => onPick(item)}
                 className="px-4 py-2.5 border-b border-border/50"
               >
-                <Text className="text-sm text-charcoal">{job}</Text>
+                <Text className="text-sm text-charcoal">{item}</Text>
               </Pressable>
             ))}
           </ScrollView>
@@ -149,8 +170,16 @@ export default function OnboardingScreen() {
 
   const [search, setSearch] = useState(data.job_type);
   const [mSearch, setMSearch] = useState(data.partners_job_type);
+  const [natSearch, setNatSearch] = useState(data.nationality);
+  const [countrySearch, setCountrySearch] = useState(data.country);
   const [allFemaleJobs, setAllFemaleJobs] = useState<string[]>(() => getAllJobTitles("female"));
   const [allMaleJobs, setAllMaleJobs] = useState<string[]>(() => getAllJobTitles("male"));
+
+  const initialConceptionTarget = parseConceptionTarget(data.target_conception_season);
+  const [conceptionSeason, setConceptionSeason] = useState(initialConceptionTarget.season);
+  const [conceptionYear, setConceptionYear] = useState(
+    initialConceptionTarget.year || String(CURRENT_YEAR),
+  );
 
   useEffect(() => {
     import("@/lib/datasets").then(({ getAllJobTitlesDynamic }) => {
@@ -159,25 +188,31 @@ export default function OnboardingScreen() {
     });
   }, []);
 
-  function reconcileJobSearch(
+  function reconcileSearch(
     list: string[],
     searchVal: string,
     setSearchVal: (v: string) => void,
-    setJobField: (v: string) => void,
+    setStoredField: (v: string) => void,
     confirmedValue: string,
   ) {
     const trimmed = searchVal.trim();
     if (trimmed === "") {
-      setJobField("");
+      setStoredField("");
       return;
     }
     const match = list.find((j) => j.toLowerCase() === trimmed.toLowerCase());
     if (match) {
-      setJobField(match);
+      setStoredField(match);
       setSearchVal(match);
     } else {
       setSearchVal(confirmedValue);
     }
+  }
+
+  function updateConceptionTarget(season: string, year: string) {
+    setConceptionSeason(season);
+    setConceptionYear(year);
+    setField("target_conception_season", season && year ? `${season} ${year}` : season);
   }
 
   function next() {
@@ -301,13 +336,6 @@ export default function OnboardingScreen() {
     );
   }
 
-  const filteredFemale = allFemaleJobs
-    .filter((j) => j.toLowerCase().includes(search.toLowerCase()))
-    .slice(0, 8);
-  const filteredMale = allMaleJobs
-    .filter((j) => j.toLowerCase().includes(mSearch.toLowerCase()))
-    .slice(0, 8);
-
   return (
     <KeyboardAvoidingView
       className="flex-1 bg-bg"
@@ -360,7 +388,7 @@ export default function OnboardingScreen() {
             const disabled =
               (data.journey_type === "currently_pregnant" || data.journey_type === "postpartum"
                 ? !inRange(data.current_week, weekRange)
-                : !data.target_conception_season.trim()) ||
+                : !conceptionSeason || !inRange(conceptionYear, CONCEPTION_YEAR_RANGE)) ||
               !inRangeOrEmpty(data.previous_children, PREVIOUS_CHILDREN_RANGE);
             return (
               <>
@@ -387,12 +415,47 @@ export default function OnboardingScreen() {
                     }
                   />
                 ) : (
-                  <Input
-                    label="Target conception season"
-                    value={data.target_conception_season}
-                    onChangeText={(v) => setField("target_conception_season", v)}
-                    placeholder="e.g. Spring 2025"
-                  />
+                  <>
+                    <Text className="text-2xs text-muted uppercase tracking-widest font-medium mb-2">
+                      Target conception season
+                    </Text>
+                    <View className="flex-row gap-2 mb-5">
+                      {TARGET_SEASONS.map((season) => {
+                        const selected = conceptionSeason === season;
+                        return (
+                          <Pressable
+                            key={season}
+                            onPress={() => updateConceptionTarget(season, conceptionYear)}
+                            className="flex-1 py-3 rounded-xl items-center border"
+                            style={{
+                              backgroundColor: selected ? "rgba(212,176,106,0.1)" : "#fff",
+                              borderColor: selected ? "#D4B06A" : "rgba(180,155,120,0.18)",
+                              borderWidth: selected ? 1.5 : 1,
+                            }}
+                          >
+                            <Text
+                              className="text-sm font-medium"
+                              style={{ color: selected ? "#D4B06A" : "#1A1816" }}
+                            >
+                              {season}
+                            </Text>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                    <Input
+                      label="Target year"
+                      value={conceptionYear}
+                      onChangeText={(v) => updateConceptionTarget(conceptionSeason, v)}
+                      keyboardType="number-pad"
+                      placeholder={String(CURRENT_YEAR)}
+                      error={
+                        conceptionYear && !inRange(conceptionYear, CONCEPTION_YEAR_RANGE)
+                          ? `Enter a year between ${CONCEPTION_YEAR_RANGE.min} and ${CONCEPTION_YEAR_RANGE.max}`
+                          : undefined
+                      }
+                    />
+                  </>
                 )}
                 <Input
                   label="Number of previous children"
@@ -468,12 +531,18 @@ export default function OnboardingScreen() {
                   : undefined
               }
             />
-            <Input
+            <SearchSelectField
               label="Nationality"
-              value={data.nationality}
-              onChangeText={(v) => setField("nationality", v)}
-              placeholder="e.g. Swiss"
-              autoCapitalize="words"
+              search={natSearch}
+              onSearchChange={setNatSearch}
+              suggestions={COUNTRIES}
+              onPick={(country) => {
+                setField("nationality", country);
+                setNatSearch(country);
+              }}
+              onReconcile={() =>
+                reconcileSearch(COUNTRIES, natSearch, setNatSearch, (v) => setField("nationality", v), data.nationality)
+              }
             />
             <View className="mt-4">
               <Button
@@ -526,14 +595,20 @@ export default function OnboardingScreen() {
                 onSelect={() => setField("skin_type", opt.value)}
               />
             ))}
-            <Input
+            <SearchSelectField
               label="Country"
-              value={data.country}
-              onChangeText={(v) => setField("country", v)}
-              placeholder="e.g. Switzerland"
-              autoCapitalize="words"
+              search={countrySearch}
+              onSearchChange={setCountrySearch}
+              suggestions={COUNTRIES}
+              onPick={(country) => {
+                setField("country", country);
+                setCountrySearch(country);
+              }}
+              onReconcile={() =>
+                reconcileSearch(COUNTRIES, countrySearch, setCountrySearch, (v) => setField("country", v), data.country)
+              }
             />
-            <JobSearchField
+            <SearchSelectField
               label="Your job"
               search={search}
               onSearchChange={setSearch}
@@ -543,13 +618,13 @@ export default function OnboardingScreen() {
                 setSearch(job);
               }}
               onReconcile={() =>
-                reconcileJobSearch(allFemaleJobs, search, setSearch, (v) => setField("job_type", v), data.job_type)
+                reconcileSearch(allFemaleJobs, search, setSearch, (v) => setField("job_type", v), data.job_type)
               }
             />
             <Text className="text-2xs text-muted uppercase tracking-widest font-medium mb-2 mt-2">
               Activity level
             </Text>
-            {["Sedentary", "Light", "Moderate", "Active", "Very Active"].map((level) => (
+            {ACTIVITY_LEVELS.map((level) => (
               <RadioCard
                 key={level}
                 label={level}
@@ -560,7 +635,7 @@ export default function OnboardingScreen() {
             <Text className="text-2xs text-muted uppercase tracking-widest font-medium mb-2 mt-2">
               Diet type
             </Text>
-            {["Omnivore", "Vegetarian", "Vegan", "Pescatarian", "Gluten-free"].map((d) => (
+            {DIET_TYPES.map((d) => (
               <RadioCard
                 key={d}
                 label={d}
@@ -568,12 +643,18 @@ export default function OnboardingScreen() {
                 onSelect={() => setField("diet_type", d)}
               />
             ))}
-            <Input
-              label="Sun exposure"
-              value={data.sun_exposure}
-              onChangeText={(v) => setField("sun_exposure", v)}
-              placeholder="e.g. Moderate — daily outdoor time"
-            />
+            <Text className="text-2xs text-muted uppercase tracking-widest font-medium mb-2 mt-2">
+              Sun exposure
+            </Text>
+            {SUN_EXPOSURE_LEVELS.map((opt) => (
+              <RadioCard
+                key={opt.label}
+                label={opt.label}
+                description={opt.desc}
+                selected={data.sun_exposure === opt.label}
+                onSelect={() => setField("sun_exposure", opt.label)}
+              />
+            ))}
             <View className="mt-2">
               <Button fullWidth disabled={!data.city.trim()} onPress={next}>
                 Continue
@@ -601,7 +682,7 @@ export default function OnboardingScreen() {
                   : undefined
               }
             />
-            <JobSearchField
+            <SearchSelectField
               label="Partner job"
               search={mSearch}
               onSearchChange={setMSearch}
@@ -611,7 +692,7 @@ export default function OnboardingScreen() {
                 setMSearch(job);
               }}
               onReconcile={() =>
-                reconcileJobSearch(
+                reconcileSearch(
                   allMaleJobs,
                   mSearch,
                   setMSearch,
@@ -620,18 +701,28 @@ export default function OnboardingScreen() {
                 )
               }
             />
-            <Input
-              label="Partner diet type"
-              value={data.partner_diet}
-              onChangeText={(v) => setField("partner_diet", v)}
-              placeholder="e.g. Omnivore"
-            />
-            <Input
-              label="Partner activity level"
-              value={data.partner_activity}
-              onChangeText={(v) => setField("partner_activity", v)}
-              placeholder="e.g. Moderate"
-            />
+            <Text className="text-2xs text-muted uppercase tracking-widest font-medium mb-2 mt-2">
+              Partner diet type
+            </Text>
+            {DIET_TYPES.map((d) => (
+              <RadioCard
+                key={d}
+                label={d}
+                selected={data.partner_diet === d}
+                onSelect={() => setField("partner_diet", d)}
+              />
+            ))}
+            <Text className="text-2xs text-muted uppercase tracking-widest font-medium mb-2 mt-2">
+              Partner activity level
+            </Text>
+            {ACTIVITY_LEVELS.map((level) => (
+              <RadioCard
+                key={level}
+                label={level}
+                selected={data.partner_activity === level}
+                onSelect={() => setField("partner_activity", level)}
+              />
+            ))}
             {saveError ? (
               <Text className="text-sm text-warning text-center mb-3">{saveError}</Text>
             ) : null}
