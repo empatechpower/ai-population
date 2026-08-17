@@ -6,6 +6,7 @@ import { updateProfile } from "@/lib/data";
 import { triggerOnboardingComplete } from "@/lib/workflows";
 import { getUserId } from "@/lib/auth";
 import { getAllJobTitles, Job, lookupJob } from "@/data/job_index";
+import { COUNTRIES } from "@/data/countries";
 import { ChevronLeft, ArrowRight, Leaf, Sun, Moon, Check } from "lucide-react";
 import Input from "@/components/shared/Input";
 import Button from "@/components/shared/Button";
@@ -34,6 +35,26 @@ const WEIGHT_RANGE = { min: 30, max: 250 }; // kg
 const PREGNANCY_WEEK_RANGE = { min: 1, max: 42 };
 const POSTPARTUM_WEEK_RANGE = { min: 0, max: 52 };
 const PREVIOUS_CHILDREN_RANGE = { min: 0, max: 20 };
+const CURRENT_YEAR = new Date().getFullYear();
+const CONCEPTION_YEAR_RANGE = { min: CURRENT_YEAR, max: CURRENT_YEAR + 5 };
+
+const ACTIVITY_LEVELS = ["Sedentary", "Light", "Moderate", "Active", "Very Active"];
+const DIET_TYPES = ["Omnivore", "Vegetarian", "Vegan", "Pescatarian", "Gluten-free"];
+const TARGET_SEASONS = ["Spring", "Summer", "Fall", "Winter"];
+const SUN_EXPOSURE_LEVELS = [
+  { label: "Minimal", desc: "Rarely outdoors, mostly indoor lifestyle" },
+  { label: "Low", desc: "A few minutes daily, mostly indirect light" },
+  { label: "Moderate", desc: "Daily outdoor time, some direct sun" },
+  { label: "High", desc: "Extended outdoor time most days" },
+  { label: "Very High", desc: "Outdoors most of the day, direct sun" },
+];
+
+function parseConceptionTarget(value: string): { season: string; year: string } {
+  const parts = value.trim().split(/\s+/);
+  const season = TARGET_SEASONS.find((s) => s === parts[0]) ?? "";
+  const year = parts[1] && /^\d{4}$/.test(parts[1]) ? parts[1] : "";
+  return { season, year };
+}
 
 function inRange(value: string, range: { min: number; max: number }): boolean {
   if (value.trim() === "") return false;
@@ -200,6 +221,60 @@ function RadioCard({
   );
 }
 
+function SearchSelectField({
+  label,
+  search,
+  onSearchChange,
+  suggestions,
+  onPick,
+  onReconcile,
+}: {
+  label: string;
+  search: string;
+  onSearchChange: (v: string) => void;
+  suggestions: string[];
+  onPick: (value: string) => void;
+  onReconcile: () => void;
+}) {
+  const [focused, setFocused] = useState(false);
+  const filtered = suggestions
+    .filter((s) => s.toLowerCase().includes(search.toLowerCase()))
+    .slice(0, 8);
+
+  return (
+    <div className="relative" style={{ marginBottom: 20 }}>
+      <Input
+        label={label}
+        placeholder="Type to search..."
+        value={search}
+        onChange={(e) => onSearchChange(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => {
+          setFocused(false);
+          onReconcile();
+        }}
+      />
+      {focused && filtered.length > 0 && (
+        <div className="absolute z-10 w-full bg-white border border-border rounded-xl mt-1 shadow-sm max-h-48 overflow-y-auto">
+          {filtered.map((item) => (
+            <button
+              key={item}
+              className="w-full text-left px-4 py-2.5 text-sm text-charcoal hover:bg-gold-light transition-colors"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => {
+                onPick(item);
+                setFocused(false);
+              }}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function StepHeader({ step, onBack }: { step: number; onBack: () => void }) {
   const pct = (step / TOTAL) * 100;
   return (
@@ -293,9 +368,9 @@ export default function OnboardingPage() {
   }, []);
   const [search, setSearch] = useState(data.job_type);
   const [mSearch, setmSearch] = useState(data.partners_job_type);
+  const [natSearch, setNatSearch] = useState(data.nationality);
+  const [countrySearch, setCountrySearch] = useState(data.country);
 
-  const [showJobList, setShowJobList] = useState(false);
-  const [showPartnerJobList, setShowPartnerJobList] = useState(false);
   const [allFemaleJobs, setAllFemaleJobs] = useState<string[]>(() =>
     getAllJobTitles("female"),
   );
@@ -306,10 +381,6 @@ export default function OnboardingPage() {
         .catch(() => {}),
     );
   }, []);
-  const filtered = allFemaleJobs
-    .filter((j) => j.toLowerCase().includes(search.toLowerCase()))
-    .slice(0, 8);
-  // const allMaleJobs = getAllJobTitles("male");
   const [allMaleJobs, setAllMaleJobs] = useState<string[]>(() =>
     getAllJobTitles("male"),
   );
@@ -320,27 +391,36 @@ export default function OnboardingPage() {
         .catch(() => {}),
     );
   }, []);
-  const mfiltered = allMaleJobs
-    .filter((j) => j.toLowerCase().includes(mSearch.toLowerCase()))
-    .slice(0, 8);
 
-  // Reconciles free-typed search text against the job list on blur, so the
-  // visible text can never drift out of sync with the stored job_type value.
-  function reconcileJobSearch(
+  const initialConceptionTarget = parseConceptionTarget(data.target_conception_season);
+  const [conceptionSeason, setConceptionSeason] = useState(initialConceptionTarget.season);
+  const [conceptionYear, setConceptionYear] = useState(
+    initialConceptionTarget.year || String(CURRENT_YEAR),
+  );
+
+  function updateConceptionTarget(season: string, year: string) {
+    setConceptionSeason(season);
+    setConceptionYear(year);
+    setField("target_conception_season", season && year ? `${season} ${year}` : season);
+  }
+
+  // Reconciles free-typed search text against a fixed list on blur, so the
+  // visible text can never drift out of sync with the stored field value.
+  function reconcileSearch(
     list: string[],
     searchVal: string,
     setSearchVal: (v: string) => void,
-    setJobField: (v: string) => void,
+    setStoredField: (v: string) => void,
     confirmedValue: string,
   ) {
     const trimmed = searchVal.trim();
     if (trimmed === "") {
-      setJobField("");
+      setStoredField("");
       return;
     }
     const match = list.find((j) => j.toLowerCase() === trimmed.toLowerCase());
     if (match) {
-      setJobField(match);
+      setStoredField(match);
       setSearchVal(match);
     } else {
       // No exact match — discard the unconfirmed text
@@ -662,12 +742,61 @@ export default function OnboardingPage() {
               }
             />
           ) : (
-            <InputField
-              label="Target conception season"
-              value={data.target_conception_season}
-              onChange={(v) => setField("target_conception_season", v)}
-              placeholder="e.g. Spring 2025"
-            />
+            <div style={{ marginBottom: 20 }}>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: 12,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase" as const,
+                  color: TEXT_MUTED,
+                  marginBottom: 8,
+                  fontWeight: 500,
+                }}
+              >
+                Target conception season
+              </label>
+              <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+                {TARGET_SEASONS.map((season) => {
+                  const selected = conceptionSeason === season;
+                  return (
+                    <button
+                      key={season}
+                      onClick={() => updateConceptionTarget(season, conceptionYear)}
+                      style={{
+                        flex: 1,
+                        padding: "12px 0",
+                        borderRadius: 12,
+                        textAlign: "center" as const,
+                        background: selected ? "rgba(212,176,106,0.1)" : CARD,
+                        border: selected ? `1.5px solid ${GOLD}` : `1.5px solid ${BORDER}`,
+                        color: selected ? GOLD : TEXT_PRIMARY,
+                        fontSize: 14,
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        fontFamily: "inherit",
+                      }}
+                    >
+                      {season}
+                    </button>
+                  );
+                })}
+              </div>
+              <InputField
+                label="Target year"
+                value={conceptionYear}
+                onChange={(v) => updateConceptionTarget(conceptionSeason, v)}
+                type="number"
+                min={CONCEPTION_YEAR_RANGE.min}
+                max={CONCEPTION_YEAR_RANGE.max}
+                placeholder={String(CURRENT_YEAR)}
+                error={
+                  conceptionYear && !inRange(conceptionYear, CONCEPTION_YEAR_RANGE)
+                    ? `Enter a year between ${CONCEPTION_YEAR_RANGE.min} and ${CONCEPTION_YEAR_RANGE.max}`
+                    : undefined
+                }
+              />
+            </div>
           )}
           <InputField
             label="Number of previous children"
@@ -691,7 +820,7 @@ export default function OnboardingPage() {
             (data.journey_type === "currently_pregnant" ||
             data.journey_type === "postpartum"
               ? !inRange(data.current_week, weekRange)
-              : !data.target_conception_season.trim()) ||
+              : !conceptionSeason || !inRange(conceptionYear, CONCEPTION_YEAR_RANGE)) ||
             !inRangeOrEmpty(data.previous_children, PREVIOUS_CHILDREN_RANGE)
           }
         />
@@ -782,11 +911,18 @@ export default function OnboardingPage() {
                 : undefined
             }
           />
-          <InputField
+          <SearchSelectField
             label="Nationality"
-            value={data.nationality}
-            onChange={(v) => setField("nationality", v)}
-            placeholder="e.g. Swiss"
+            search={natSearch}
+            onSearchChange={setNatSearch}
+            suggestions={COUNTRIES}
+            onPick={(country) => {
+              setField("nationality", country);
+              setNatSearch(country);
+            }}
+            onReconcile={() =>
+              reconcileSearch(COUNTRIES, natSearch, setNatSearch, (v) => setField("nationality", v), data.nationality)
+            }
           />
         </div>
         <ContinueBtn
@@ -881,53 +1017,32 @@ export default function OnboardingPage() {
               />
             ))}
           </div>
-          <InputField
+          <SearchSelectField
             label="Country"
-            value={data.country}
-            onChange={(v) => setField("country", v)}
-            placeholder="e.g. Switzerland"
+            search={countrySearch}
+            onSearchChange={setCountrySearch}
+            suggestions={COUNTRIES}
+            onPick={(country) => {
+              setField("country", country);
+              setCountrySearch(country);
+            }}
+            onReconcile={() =>
+              reconcileSearch(COUNTRIES, countrySearch, setCountrySearch, (v) => setField("country", v), data.country)
+            }
           />
-          <div className="relative">
-            <Input
-              label="Your Job"
-              placeholder="Type to search..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setShowJobList(true);
-              }}
-              onFocus={() => setShowJobList(true)}
-              onBlur={() => {
-                setShowJobList(false);
-                reconcileJobSearch(
-                  allFemaleJobs,
-                  search,
-                  setSearch,
-                  (v) => setField("job_type", v),
-                  data.job_type,
-                );
-              }}
-            />
-
-            {showJobList && filtered.length > 0 && (
-              <div className="absolute z-10 w-full bg-white border border-border rounded-xl mt-1 shadow-sm max-h-48 overflow-y-auto">
-                {filtered.map((job) => (
-                  <button
-                    key={job}
-                    className="w-full text-left px-4 py-2.5 text-sm text-charcoal hover:bg-gold-light transition-colors"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => {
-                      setField("job_type", job);
-                      setSearch(job);
-                      setShowJobList(false);
-                    }}
-                  >
-                    {job}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <SearchSelectField
+            label="Your Job"
+            search={search}
+            onSearchChange={setSearch}
+            suggestions={allFemaleJobs}
+            onPick={(job) => {
+              setField("job_type", job);
+              setSearch(job);
+            }}
+            onReconcile={() =>
+              reconcileSearch(allFemaleJobs, search, setSearch, (v) => setField("job_type", v), data.job_type)
+            }
+          />
           <div style={{ marginBottom: 20 }}>
             <label
               style={{
@@ -942,16 +1057,14 @@ export default function OnboardingPage() {
             >
               Activity Level
             </label>
-            {["Sedentary", "Light", "Moderate", "Active", "Very Active"].map(
-              (level) => (
-                <RadioCard
-                  key={level}
-                  label={level}
-                  selected={data.activity_level === level}
-                  onSelect={() => setField("activity_level", level)}
-                />
-              ),
-            )}
+            {ACTIVITY_LEVELS.map((level) => (
+              <RadioCard
+                key={level}
+                label={level}
+                selected={data.activity_level === level}
+                onSelect={() => setField("activity_level", level)}
+              />
+            ))}
           </div>
           <div style={{ marginBottom: 20 }}>
             <label
@@ -967,13 +1080,7 @@ export default function OnboardingPage() {
             >
               Diet Type
             </label>
-            {[
-              "Omnivore",
-              "Vegetarian",
-              "Vegan",
-              "Pescatarian",
-              "Gluten-free",
-            ].map((d) => (
+            {DIET_TYPES.map((d) => (
               <RadioCard
                 key={d}
                 label={d}
@@ -982,14 +1089,32 @@ export default function OnboardingPage() {
               />
             ))}
           </div>
-          <InputField
-            label="Sun exposure"
-            value={data.sun_exposure}
-            onChange={(v) => setField("sun_exposure", v)}
-            placeholder="e.g. Moderate — daily outdoor time"
-          />
+          <div style={{ marginBottom: 20 }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: 12,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase" as const,
+                color: TEXT_MUTED,
+                marginBottom: 8,
+                fontWeight: 500,
+              }}
+            >
+              Sun Exposure
+            </label>
+            {SUN_EXPOSURE_LEVELS.map((opt) => (
+              <RadioCard
+                key={opt.label}
+                label={opt.label}
+                description={opt.desc}
+                selected={data.sun_exposure === opt.label}
+                onSelect={() => setField("sun_exposure", opt.label)}
+              />
+            ))}
+          </div>
         </div>
-        <ContinueBtn onClick={next} disabled={!data.city} />
+        <ContinueBtn onClick={next} disabled={!data.city.trim()} />
       </>,
     );
 
@@ -1045,59 +1170,71 @@ export default function OnboardingPage() {
                 : undefined
             }
           />
-          <div className="relative">
-            <Input
-              label="Partner Job"
-              placeholder="Type to search..."
-              value={mSearch}
-              onChange={(e) => {
-                setmSearch(e.target.value);
-                setShowPartnerJobList(true);
+          <SearchSelectField
+            label="Partner Job"
+            search={mSearch}
+            onSearchChange={setmSearch}
+            suggestions={allMaleJobs}
+            onPick={(job) => {
+              setField("partners_job_type", job);
+              setmSearch(job);
+            }}
+            onReconcile={() =>
+              reconcileSearch(
+                allMaleJobs,
+                mSearch,
+                setmSearch,
+                (v) => setField("partners_job_type", v),
+                data.partners_job_type,
+              )
+            }
+          />
+          <div style={{ marginBottom: 20 }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: 12,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase" as const,
+                color: TEXT_MUTED,
+                marginBottom: 8,
+                fontWeight: 500,
               }}
-              onFocus={() => setShowPartnerJobList(true)}
-              onBlur={() => {
-                setShowPartnerJobList(false);
-                reconcileJobSearch(
-                  allMaleJobs,
-                  mSearch,
-                  setmSearch,
-                  (v) => setField("partners_job_type", v),
-                  data.partners_job_type,
-                );
-              }}
-            />
-
-            {showPartnerJobList && mfiltered.length > 0 && (
-              <div className="absolute z-10 w-full bg-white border border-border rounded-xl mt-1 shadow-sm max-h-48 overflow-y-auto">
-                {mfiltered.map((job) => (
-                  <button
-                    key={job}
-                    className="w-full text-left px-4 py-2.5 text-sm text-charcoal hover:bg-gold-light transition-colors"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => {
-                      setField("partners_job_type", job);
-                      setmSearch(job);
-                      setShowPartnerJobList(false);
-                    }}
-                  >
-                    {job}
-                  </button>
-                ))}
-              </div>
-            )}
+            >
+              Partner Diet Type
+            </label>
+            {DIET_TYPES.map((d) => (
+              <RadioCard
+                key={d}
+                label={d}
+                selected={data.partner_diet === d}
+                onSelect={() => setField("partner_diet", d)}
+              />
+            ))}
           </div>
-          <InputField
-            label="Partner diet type"
-            value={data.partner_diet}
-            onChange={(v) => setField("partner_diet", v)}
-            placeholder="e.g. Omnivore"
-          />
-          <InputField
-            label="Partner activity level"
-            value={data.partner_activity}
-            onChange={(v) => setField("partner_activity", v)}
-            placeholder="e.g. Moderate"
-          />
+          <div style={{ marginBottom: 20 }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: 12,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase" as const,
+                color: TEXT_MUTED,
+                marginBottom: 8,
+                fontWeight: 500,
+              }}
+            >
+              Partner Activity Level
+            </label>
+            {ACTIVITY_LEVELS.map((level) => (
+              <RadioCard
+                key={level}
+                label={level}
+                selected={data.partner_activity === level}
+                onSelect={() => setField("partner_activity", level)}
+              />
+            ))}
+          </div>
         </div>
         {saveError && (
           <p
