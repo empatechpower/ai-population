@@ -19,7 +19,7 @@ import Input from "@/components/shared/Input";
 import Button from "@/components/shared/Button";
 import RadioCard from "@/components/shared/RadioCard";
 
-const TOTAL = 6;
+const TOTAL = 5;
 
 const CHECKS = [
   "Daily AI protocol generated",
@@ -36,9 +36,13 @@ const PREGNANCY_WEEK_RANGE = { min: 1, max: 42 };
 const POSTPARTUM_WEEK_RANGE = { min: 0, max: 52 };
 const PREVIOUS_CHILDREN_RANGE = { min: 0, max: 20 };
 
+function toNumber(value: string): number {
+  return Number(value.trim().replace(",", "."));
+}
+
 function inRange(value: string, range: { min: number; max: number }): boolean {
   if (value.trim() === "") return false;
-  const n = Number(value);
+  const n = toNumber(value);
   return Number.isFinite(n) && n >= range.min && n <= range.max;
 }
 
@@ -212,21 +216,21 @@ export default function OnboardingScreen() {
       const maleImpact = getMaleImpact(maleJob as unknown as Job | null);
 
       await updateProfile({
-        first_name: data.first_name,
-        age: Number(data.age) || 0,
-        height: Number(data.height) || 0,
-        weight: Number(data.weight) || 0,
+        first_name: data.first_name.trim(),
+        age: toNumber(data.age) || 0,
+        height: toNumber(data.height) || 0,
+        weight: toNumber(data.weight) || 0,
         journey_type: data.journey_type,
-        target_conception_season: data.target_conception_season,
-        previous_children: Number(data.previous_children) || 0,
-        nationality: data.nationality,
-        country: data.country,
-        city: data.city,
+        target_conception_season: data.target_conception_season.trim(),
+        previous_children: toNumber(data.previous_children) || 0,
+        nationality: data.nationality.trim(),
+        country: data.country.trim(),
+        city: data.city.trim(),
         job_type: data.job_type,
         activity_level: data.activity_level,
         diet_type: data.diet_type,
-        sun_exposure: data.sun_exposure,
-        partner_age: Number(data.partner_age) || 0,
+        sun_exposure: data.sun_exposure.trim(),
+        partner_age: toNumber(data.partner_age) || 0,
         partner_job_type: data.partners_job_type,
         partner_activity: data.partner_activity,
         partner_diet: data.partner_diet,
@@ -241,7 +245,7 @@ export default function OnboardingScreen() {
         male_sperm_impact: maleImpact.sperm,
         male_hormone_impact: maleImpact.hormones,
         baby_impact: maleImpact.baby,
-        current_week: Number(data.current_week) || 0,
+        current_week: toNumber(data.current_week) || 0,
       });
 
       const uid = getUserId();
@@ -424,6 +428,9 @@ export default function OnboardingScreen() {
               value={data.first_name}
               onChangeText={(v) => setField("first_name", v)}
               placeholder="Your first name"
+              autoCapitalize="words"
+              autoComplete="name-given"
+              textContentType="givenName"
             />
             <Input
               label="Age"
@@ -441,7 +448,7 @@ export default function OnboardingScreen() {
               label="Height (cm)"
               value={data.height}
               onChangeText={(v) => setField("height", v)}
-              keyboardType="number-pad"
+              keyboardType="decimal-pad"
               placeholder="e.g. 165"
               error={
                 data.height && !inRangeOrEmpty(data.height, HEIGHT_RANGE)
@@ -453,7 +460,7 @@ export default function OnboardingScreen() {
               label="Weight (kg)"
               value={data.weight}
               onChangeText={(v) => setField("weight", v)}
-              keyboardType="number-pad"
+              keyboardType="decimal-pad"
               placeholder="e.g. 63"
               error={
                 data.weight && !inRangeOrEmpty(data.weight, WEIGHT_RANGE)
@@ -466,6 +473,7 @@ export default function OnboardingScreen() {
               value={data.nationality}
               onChangeText={(v) => setField("nationality", v)}
               placeholder="e.g. Swiss"
+              autoCapitalize="words"
             />
             <View className="mt-4">
               <Button
@@ -496,6 +504,7 @@ export default function OnboardingScreen() {
               value={data.city}
               onChangeText={(v) => setField("city", v)}
               placeholder="e.g. Zurich"
+              autoCapitalize="words"
             />
             <Text className="text-2xs text-muted uppercase tracking-widest font-medium mb-2">
               Skin type
@@ -522,6 +531,7 @@ export default function OnboardingScreen() {
               value={data.country}
               onChangeText={(v) => setField("country", v)}
               placeholder="e.g. Switzerland"
+              autoCapitalize="words"
             />
             <JobSearchField
               label="Your job"
@@ -565,7 +575,7 @@ export default function OnboardingScreen() {
               placeholder="e.g. Moderate — daily outdoor time"
             />
             <View className="mt-2">
-              <Button fullWidth disabled={!data.city} onPress={next}>
+              <Button fullWidth disabled={!data.city.trim()} onPress={next}>
                 Continue
               </Button>
             </View>
@@ -627,12 +637,22 @@ export default function OnboardingScreen() {
             ) : null}
             <View className="flex-row gap-3 mt-2">
               <View className="flex-1">
-                <Button variant="outline" fullWidth disabled={saving} onPress={handleComplete}>
+                <Button
+                  variant="outline"
+                  fullWidth
+                  disabled={saving || !inRangeOrEmpty(data.partner_age, PARTNER_AGE_RANGE)}
+                  onPress={handleComplete}
+                >
                   Skip for now
                 </Button>
               </View>
               <View className="flex-[2]">
-                <Button fullWidth loading={saving} onPress={handleComplete}>
+                <Button
+                  fullWidth
+                  loading={saving}
+                  disabled={!inRangeOrEmpty(data.partner_age, PARTNER_AGE_RANGE)}
+                  onPress={handleComplete}
+                >
                   Complete
                 </Button>
               </View>
