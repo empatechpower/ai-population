@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import Slider from "@react-native-community/slider";
@@ -219,7 +219,10 @@ export default function ProfileScreen() {
   // ── Edit bottom sheet ──────────────────────────────────────
   if (editField) {
     return (
-      <View className="flex-1 bg-bg">
+      <KeyboardAvoidingView
+        className="flex-1 bg-bg"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         <View className="flex-row items-center justify-between px-5 py-4 border-b border-border">
           <Text className="text-[17px] font-semibold text-primary">Edit {editField.label}</Text>
           <Pressable onPress={() => setEditField(null)}>
@@ -256,7 +259,7 @@ export default function ProfileScreen() {
             </Pressable>
           </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 

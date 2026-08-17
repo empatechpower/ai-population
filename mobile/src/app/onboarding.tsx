@@ -307,7 +307,7 @@ export default function OnboardingScreen() {
   return (
     <KeyboardAvoidingView
       className="flex-1 bg-bg"
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <StepHeader step={step} onBack={back} />
       <ScrollView contentContainerClassName="flex-grow px-6 pt-7 pb-8" keyboardShouldPersistTaps="handled">

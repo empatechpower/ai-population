@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Image,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -314,7 +316,7 @@ export default function CommunityScreen() {
   // ── Chat overlay ──────────────────────────────────────────
   if (chatGroup) {
     return (
-      <View className="flex-1 bg-bg">
+      <KeyboardAvoidingView className="flex-1 bg-bg" behavior={Platform.OS === "ios" ? "padding" : "height"}>
         <View className="px-4 py-3.5 bg-card border-b border-border flex-row items-center gap-3">
           <Pressable onPress={closeChat}>
             <ChevronLeft size={22} color="#1A1816" />
@@ -400,7 +402,7 @@ export default function CommunityScreen() {
             <Send size={15} color={chatInput.trim() ? "#FFF8EE" : MUTED} />
           </Pressable>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 
@@ -408,7 +410,7 @@ export default function CommunityScreen() {
   if (showNewPost) {
     const canShare = newPostText.trim() && !posting && uploadProgress !== "uploading";
     return (
-      <View className="flex-1 bg-bg">
+      <KeyboardAvoidingView className="flex-1 bg-bg" behavior={Platform.OS === "ios" ? "padding" : "height"}>
         <View className="px-5 py-4 bg-card border-b border-border flex-row items-center justify-between">
           <Pressable
             onPress={() => {
@@ -540,7 +542,7 @@ export default function CommunityScreen() {
             Your post is shared only within your selected community.{"\n"}Always kind. Always private.
           </Text>
         </ScrollView>
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 

@@ -86,7 +86,7 @@ export default function PostDetailScreen() {
   if (loading) return <LoadingScreen message="Loading post…" />;
 
   return (
-    <KeyboardAvoidingView className="flex-1 bg-bg" behavior={Platform.OS === "ios" ? "padding" : undefined}>
+    <KeyboardAvoidingView className="flex-1 bg-bg" behavior={Platform.OS === "ios" ? "padding" : "height"}>
       <View className="flex-row items-center gap-3 px-5 py-4 border-b border-border">
         <Pressable onPress={() => router.push("/community")} className="flex-row items-center gap-1">
           <ChevronLeft size={20} color="#7B7268" />

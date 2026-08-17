@@ -100,7 +100,7 @@ export default function AuthScreen() {
   return (
     <KeyboardAvoidingView
       className="flex-1 bg-bg"
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerClassName="flex-grow justify-center px-6 py-10">
         <Pressable onPress={() => switchMode("landing")} className="mb-8">
