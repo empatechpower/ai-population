@@ -11,7 +11,8 @@ import {
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { router } from "expo-router";
-import { logIn, signUp, signInWithGoogle, isEmailVerified } from "@/lib/auth";
+import * as AppleAuthentication from "expo-apple-authentication";
+import { logIn, signUp, signInWithGoogle, signInWithApple, isEmailVerified } from "@/lib/auth";
 
 function GoogleLogo() {
   return (
@@ -104,6 +105,24 @@ export default function AuthScreen() {
     }
   }
 
+  async function handleAppleSignIn() {
+    if (loading) return;
+    setLoading(true);
+    setError("");
+    try {
+      const { isNewUser } = await signInWithApple();
+      if (!isEmailVerified()) {
+        router.replace("/verify-email");
+        return;
+      }
+      router.replace(isNewUser ? "/onboarding" : "/(tabs)");
+    } catch (e: any) {
+      setError(e?.message || "Apple sign-in failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   if (mode === "landing") {
     return (
       <View className="flex-1 bg-bg justify-center items-center px-6">
@@ -182,6 +201,16 @@ export default function AuthScreen() {
           <Text className="text-muted text-xs">or</Text>
           <View className="flex-1 h-px bg-border" />
         </View>
+
+        {Platform.OS === "ios" && (
+          <AppleAuthentication.AppleAuthenticationButton
+            buttonType={AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
+            buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+            cornerRadius={16}
+            style={{ width: "100%", height: 52, marginBottom: 12, opacity: loading ? 0.6 : 1 }}
+            onPress={handleAppleSignIn}
+          />
+        )}
 
         <Pressable
           onPress={handleGoogleSignIn}

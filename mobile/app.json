@@ -10,7 +10,8 @@
     "ios": {
       "icon": "./assets/images/icon.png",
       "bundleIdentifier": "com.rogier.bleom",
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
@@ -22,7 +23,7 @@
       "predictiveBackGestureEnabled": false,
       "package": "com.rogier.bleom",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 3
+      "versionCode": 4
     },
     "web": {
       "output": "static",
@@ -30,6 +31,7 @@
     },
     "plugins": [
       "expo-router",
+      "expo-apple-authentication",
       "@react-native-google-signin/google-signin",
       [
         "expo-splash-screen",

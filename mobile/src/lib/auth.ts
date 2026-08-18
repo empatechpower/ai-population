@@ -1,4 +1,5 @@
 import { router } from "expo-router";
+import { Platform } from "react-native";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -9,6 +10,7 @@ import {
   onAuthStateChanged,
   signInWithCredential,
   GoogleAuthProvider,
+  OAuthProvider,
   getAdditionalUserInfo,
 } from "firebase/auth";
 import {
@@ -17,6 +19,8 @@ import {
   isErrorWithCode,
   statusCodes,
 } from "@react-native-google-signin/google-signin";
+import * as AppleAuthentication from "expo-apple-authentication";
+import * as Crypto from "expo-crypto";
 import { auth } from "./firebase";
 
 GoogleSignin.configure({
@@ -142,6 +146,44 @@ export async function signInWithGoogle() {
       throw new Error("Sign-in was cancelled.");
     }
     throw new Error(friendlyMessage(err, "Google sign-in failed"));
+  }
+}
+
+// ── Apple sign-in ─────────────────────────────────────────────
+// iOS only. Apple requires a nonce round trip: we send Apple the SHA256
+// hash of a random raw nonce, Apple embeds that hash in the identityToken,
+// and Firebase verifies it by hashing the raw nonce we hand it and checking
+// it matches what's inside the token.
+export async function signInWithApple() {
+  if (Platform.OS !== "ios") throw new Error("Sign in with Apple is only available on iOS.");
+  try {
+    const rawNonce = Array.from(await Crypto.getRandomBytesAsync(16))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    const hashedNonce = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, rawNonce);
+
+    const appleCredential = await AppleAuthentication.signInAsync({
+      requestedScopes: [
+        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+      ],
+      nonce: hashedNonce,
+    });
+    if (!appleCredential.identityToken) throw new Error("Apple sign-in failed");
+
+    const provider = new OAuthProvider("apple.com");
+    const firebaseCredential = provider.credential({
+      idToken: appleCredential.identityToken,
+      rawNonce,
+    });
+    const cred = await signInWithCredential(auth, firebaseCredential);
+    const isNewUser = getAdditionalUserInfo(cred)?.isNewUser ?? false;
+    return { userId: cred.user.uid, isNewUser };
+  } catch (err) {
+    if ((err as { code?: string })?.code === "ERR_REQUEST_CANCELED") {
+      throw new Error("Sign-in was cancelled.");
+    }
+    throw new Error(friendlyMessage(err, "Apple sign-in failed"));
   }
 }
 
