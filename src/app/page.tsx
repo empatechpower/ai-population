@@ -15,6 +15,9 @@ import { auth } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { ArrowRight, ChevronLeft } from "lucide-react";
 import Input from "@/components/shared/Input";
+import IntroVideo from "@/components/shared/IntroVideo";
+
+const INTRO_SEEN_KEY = "hasSeenIntro";
 
 const BG = "#F5F2EC";
 const CARD = "#FFFFFF";
@@ -34,6 +37,18 @@ export default function LandingPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // First-ever visit plays a one-time intro video ahead of the landing page,
+  // gated by a local flag so returning visitors never see it again. Starts
+  // as null (unknown) so we don't flash the landing page before checking.
+  const [showIntro, setShowIntro] = useState<boolean | null>(null);
+  useEffect(() => {
+    setShowIntro(!localStorage.getItem(INTRO_SEEN_KEY));
+  }, []);
+  function dismissIntro() {
+    localStorage.setItem(INTRO_SEEN_KEY, "1");
+    setShowIntro(false);
+  }
 
   const isEmailValid = EMAIL_RE.test(email.trim());
   const isPasswordValid = password.length >= MIN_PASSWORD_LENGTH;
@@ -276,6 +291,9 @@ export default function LandingPage() {
       <div style={{ flex: 1, height: 1, background: BORDER }} />
     </div>
   );
+
+  if (showIntro === null) return <div style={{ minHeight: "100vh", background: BG }} />;
+  if (showIntro) return <IntroVideo onFinish={dismissIntro} />;
 
   if (mode === "login")
     return (

@@ -22,6 +22,7 @@
     "expo-status-bar": "~57.0.1",
     "expo-symbols": "~57.0.1",
     "expo-system-ui": "~57.0.2",
+    "expo-video": "~57.0.2",
     "expo-web-browser": "~57.0.2",
     "firebase": "^12.17.1",
     "lucide-react-native": "^1.28.0",
