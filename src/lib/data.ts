@@ -65,7 +65,11 @@ export async function getTodayProtocol(): Promise<any> {
 
 // ── Meals ─────────────────────────────────────────────────────
 export async function getMeals(protocolId: string): Promise<any[]> {
-  const q = query(collection(db, "meals"), where("protocol", "==", protocolId));
+  const q = query(
+    collection(db, "meals"),
+    where("protocol", "==", protocolId),
+    where("user", "==", uid()),
+  );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ _id: d.id, ...d.data() }));
 }
@@ -107,6 +111,7 @@ export async function getMovementPractices(protocolId: string): Promise<any[]> {
   const q = query(
     collection(db, "movementPractices"),
     where("protocol", "==", protocolId),
+    where("user", "==", uid()),
   );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ _id: d.id, ...d.data() }));
@@ -255,7 +260,11 @@ export async function getJourneyPhases(): Promise<any[]> {
 }
 
 export async function getMilestones(phaseId: string): Promise<any[]> {
-  const q = query(collection(db, "milestones"), where("phase", "==", phaseId));
+  const q = query(
+    collection(db, "milestones"),
+    where("phase", "==", phaseId),
+    where("user", "==", uid()),
+  );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ _id: d.id, ...d.data() }));
 }
