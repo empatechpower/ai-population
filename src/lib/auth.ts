@@ -83,10 +83,17 @@ export async function resendVerificationEmail() {
 }
 
 // Reloads the current user from Firebase so a just-clicked verification
-// link is reflected, then returns the fresh emailVerified value.
+// link is reflected, then returns the fresh emailVerified value. Also force-
+// refreshes the ID token — reload() alone updates the cached user object's
+// emailVerified flag but NOT the token itself, so every API call gated by
+// verifyRequestUser()'s email_verified check would keep 401ing on the old,
+// pre-verification token otherwise.
 export async function checkEmailVerified(): Promise<boolean> {
   if (!auth.currentUser) return false;
   await reload(auth.currentUser);
+  if (auth.currentUser.emailVerified) {
+    await auth.currentUser.getIdToken(true);
+  }
   return auth.currentUser.emailVerified;
 }
 
