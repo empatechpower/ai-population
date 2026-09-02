@@ -202,7 +202,7 @@ export default function NutritionPage() {
     : [];
 
   return (
-    <div className="min-h-full bg-bg pb-24">
+    <div className="min-h-full bg-bg pb-24 sm:pb-40">
       {/* Header */}
       <div className="px-6 pt-5">
         <div

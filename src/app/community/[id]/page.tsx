@@ -119,7 +119,7 @@ export default function PostDetailPage({
   if (loading) return <LoadingScreen message="Loading post…" />;
 
   return (
-    <div className="min-h-full bg-bg pb-32">
+    <div className="min-h-full bg-bg pb-32 sm:pb-40">
       {/* Header */}
       <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
         <button

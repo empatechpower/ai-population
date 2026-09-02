@@ -183,7 +183,7 @@ export default function MovementPage() {
     : practices;
 
   return (
-    <div className="min-h-full bg-bg pb-24">
+    <div className="min-h-full bg-bg pb-24 sm:pb-40">
       <div className="px-6 pt-6">
         <h1 className="text-4xl font-medium text-primary tracking-tight mb-2">
           Movement

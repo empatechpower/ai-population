@@ -266,7 +266,7 @@ export default function JourneyPage() {
   const currentPhase = phases.find((p) => p.status === "current");
 
   return (
-    <div className="min-h-full bg-bg pb-24">
+    <div className="min-h-full bg-bg pb-24 sm:pb-40">
       {/* Header */}
       <div className="px-6 pt-6 pb-0">
         <p className="text-2xs text-muted uppercase tracking-widest font-semibold mb-1.5">

@@ -590,7 +590,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-full bg-bg pb-24">
+    <div className="min-h-full bg-bg pb-24 sm:pb-40">
       {/* ── Greeting ── */}
       <div className="flex items-start justify-between px-6 pt-6">
         <div className="flex-1 pr-4">

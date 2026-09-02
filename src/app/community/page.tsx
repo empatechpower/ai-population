@@ -398,7 +398,7 @@ export default function CommunityPage() {
 
         {/* ── FEED TAB ── */}
         {tab === "feed" && (
-          <div className="pb-24">
+          <div className="pb-24 sm:pb-40">
             {/* Filter pills */}
             <div
               className="flex gap-2 overflow-x-auto px-5 pt-4 pb-0.5"
@@ -728,7 +728,7 @@ export default function CommunityPage() {
 
         {/* ── GROUPS TAB ── */}
         {tab === "groups" && (
-          <div className="px-5 pt-4 pb-24">
+          <div className="px-5 pt-4 pb-24 sm:pb-40">
             {/* Category filter */}
             <div
               className="flex gap-2 overflow-x-auto pb-0.5 mb-5"
@@ -833,7 +833,7 @@ export default function CommunityPage() {
 
         {/* ── CHAT TAB ── */}
         {tab === "chat" && (
-          <div className="px-5 pt-4 pb-24">
+          <div className="px-5 pt-4 pb-24 sm:pb-40">
             <p className="text-2xs text-muted font-serif italic mb-4">
               Your Conversations
             </p>

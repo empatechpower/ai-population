@@ -440,7 +440,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-full bg-bg pb-24">
+    <div className="min-h-full bg-bg pb-24 sm:pb-40">
       {/* Header */}
       <div
         style={{

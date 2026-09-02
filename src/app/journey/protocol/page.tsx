@@ -191,7 +191,7 @@ export default function JourneyProtocolPage() {
   }
 
   return (
-    <div className="min-h-full bg-bg pb-24">
+    <div className="min-h-full bg-bg pb-24 sm:pb-40">
       {/* Header */}
       <div className="px-6 pt-5 pb-0">
         <button

@@ -97,7 +97,7 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
   }
 
   return (
-    <div className="min-h-screen bg-cream pb-24">
+    <div className="min-h-screen bg-cream pb-24 sm:pb-40">
       <BackHeader href="/movement" />
 
       {/* Hero */}
