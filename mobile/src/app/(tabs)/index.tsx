@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { router } from "expo-router";
 import {
@@ -25,6 +25,7 @@ import { useProtocol } from "@/hooks/useProtocol";
 import { useAppStore } from "@/store/app";
 import { triggerRecalibrate } from "@/lib/workflows";
 import { getUserId } from "@/lib/auth";
+import { setupDailyReminders } from "@/lib/notifications";
 import FertilityScoreRing from "@/components/dashboard/FertilityScoreRing";
 import LoadingScreen from "@/components/shared/LoadingScreen";
 
@@ -140,6 +141,13 @@ export default function DashboardScreen() {
   const [recalibrating, setRecalibrating] = useState(false);
   const [recalibrated, setRecalibrated] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
+
+  // Covers users who onboarded before daily reminders existed — a no-op
+  // for everyone else, since requestPermissionsAsync() doesn't re-prompt
+  // once already granted/denied and scheduling is idempotent.
+  useEffect(() => {
+    setupDailyReminders().catch(() => {});
+  }, []);
 
   if (!profile || loading) return <LoadingScreen message="Calibrating your protocol..." />;
 

@@ -16,6 +16,7 @@ import { useOnboarding } from "@/store/onboarding";
 import { updateProfile } from "@/lib/data";
 import { triggerOnboardingComplete } from "@/lib/workflows";
 import { getUserId } from "@/lib/auth";
+import { setupDailyReminders } from "@/lib/notifications";
 import { getAllJobTitles, Job, lookupJob } from "@/data/job_index";
 import { COUNTRIES } from "@/data/countries";
 import Input from "@/components/shared/Input";
@@ -306,6 +307,9 @@ export default function OnboardingScreen() {
 
       const uid = getUserId();
       if (uid) await triggerOnboardingComplete(uid);
+      // Best-effort — a denied/failed permission prompt shouldn't block
+      // onboarding completion.
+      setupDailyReminders().catch(() => {});
       setSaving(false);
       next();
     } catch (e) {

@@ -41,6 +41,7 @@ export interface Profile {
   current_week?: number;
   // pregnancy
   due_date?: string;
+  web_push_subscription?: unknown;
   [key: string]: unknown;
 }
 

@@ -1,6 +1,15 @@
 import { NextRequest } from "next/server";
 import { adminAuth } from "./firebaseAdmin";
 
+// Vercel sends CRON_SECRET as a Bearer token automatically when it invokes
+// a scheduled route (configured via vercel.json's `crons`) — this rejects
+// anyone else calling the route directly.
+export function verifyCronRequest(req: NextRequest): boolean {
+  const secret = process.env.CRON_SECRET;
+  const authHeader = req.headers.get("authorization");
+  return !!secret && authHeader === `Bearer ${secret}`;
+}
+
 // Verifies the request's Firebase ID token matches the uid it claims to act
 // as. requireVerified defaults to true so a signed-up-but-unverified account
 // can't bypass the client-side verify-email gate by calling these routes

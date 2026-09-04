@@ -4,6 +4,11 @@ import { useRouter } from "next/navigation";
 import { useProfile } from "@/hooks/useProfile";
 import { useAppStore } from "@/store/app";
 import { updateProfile } from "@/lib/data";
+import {
+  isPushSupported,
+  enablePushNotifications,
+  disablePushNotifications,
+} from "@/lib/webPushClient";
 import { triggerRecalibrate } from "@/lib/workflows";
 import { getUserId, logOut } from "@/lib/auth";
 import { auth } from "@/lib/firebase";
@@ -100,7 +105,7 @@ export default function ProfilePage() {
   // requireSubscription=false — this page hosts subscription management, so
   // it must stay reachable even when the trial/subscription has lapsed.
   useProfile(true, false);
-  const { profile, protocol } = useAppStore();
+  const { profile, protocol, setProfile } = useAppStore();
   const router = useRouter();
 
   const [personalOpen, setPersonalOpen] = useState(false);
@@ -120,6 +125,8 @@ export default function ProfilePage() {
   const [weekError, setWeekError] = useState("");
   const [managingSubscription, setManagingSubscription] = useState(false);
   const [subscriptionError, setSubscriptionError] = useState("");
+  const [notifLoading, setNotifLoading] = useState(false);
+  const [notifError, setNotifError] = useState("");
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [deleteError, setDeleteError] = useState("");
@@ -163,6 +170,25 @@ export default function ProfilePage() {
     } catch (e: any) {
       setSubscriptionError(e?.message || "Something went wrong. Please try again.");
       setManagingSubscription(false);
+    }
+  }
+
+  async function handleToggleNotifications(currentlyEnabled: boolean) {
+    setNotifLoading(true);
+    setNotifError("");
+    try {
+      if (currentlyEnabled) {
+        await disablePushNotifications();
+      } else {
+        await enablePushNotifications();
+      }
+      if (profile) {
+        setProfile({ ...profile, web_push_subscription: currentlyEnabled ? null : "pending" } as any);
+      }
+    } catch (e: any) {
+      setNotifError(e?.message || "Something went wrong. Please try again.");
+    } finally {
+      setNotifLoading(false);
     }
   }
 
@@ -1433,6 +1459,42 @@ export default function ProfilePage() {
             Version 2.4.0
           </span>
         </div>
+
+        {/* ── Notifications ── */}
+        {isPushSupported() && (
+          <div style={{ marginTop: 24 }}>
+            <button
+              onClick={() => handleToggleNotifications(!!profile.web_push_subscription)}
+              disabled={notifLoading}
+              style={{
+                width: "100%",
+                background: "var(--card)",
+                border: "1px solid var(--border)",
+                borderRadius: 14,
+                padding: "16px 18px",
+                fontSize: 14,
+                fontWeight: 600,
+                color: "var(--text-primary)",
+                cursor: notifLoading ? "not-allowed" : "pointer",
+                textAlign: "left",
+              }}
+            >
+              {notifLoading
+                ? "Updating..."
+                : profile.web_push_subscription
+                  ? "Disable daily reminders"
+                  : "Enable daily reminders"}
+            </button>
+            <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 8 }}>
+              Get nudged for breakfast, lunch, dinner, and the best time for sunshine each day.
+            </p>
+            {notifError && (
+              <p style={{ fontSize: 12, color: "#E57373", marginTop: 8, textAlign: "center" }}>
+                {notifError}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* ── Billing ── */}
         <div style={{ marginTop: 24 }}>

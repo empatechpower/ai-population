@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    { "path": "/api/cron/notify-breakfast", "schedule": "0 7 * * *" },
+    { "path": "/api/cron/notify-sunshine", "schedule": "0 8 * * *" },
+    { "path": "/api/cron/notify-lunch", "schedule": "30 11 * * *" },
+    { "path": "/api/cron/notify-dinner", "schedule": "30 17 * * *" }
+  ]
+}
