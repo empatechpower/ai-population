@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'Personalized fertility and pregnancy optimization powered by AI',
   manifest: '/manifest.json',
   appleWebApp: {
-    title: 'Bloom',
+    title: 'Bleom',
     statusBarStyle: 'black-translucent',
   },
 }

@@ -69,11 +69,11 @@ export default function InstallPrompt() {
     <div className="fixed inset-x-0 bottom-0 z-50 flex justify-center px-4 pb-4 sm:pb-6">
       <div className="flex w-full max-w-md items-center gap-3 rounded-3xl bg-elevated px-4 py-3 shadow-gold border border-border">
         <div className="flex-1 min-w-0">
-          <p className="font-sans text-sm font-semibold text-primary">Install Bloom</p>
+          <p className="font-sans text-sm font-semibold text-primary">Install Bleom</p>
           <p className="font-sans text-xs text-secondary truncate">
             {kind === "ios-manual"
               ? "Tap Share, then “Add to Home Screen”"
-              : "Add Bloom to your home screen for quick access"}
+              : "Add Bleom to your home screen for quick access"}
           </p>
         </div>
         {kind !== "ios-manual" && (

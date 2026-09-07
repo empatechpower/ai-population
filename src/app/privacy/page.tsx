@@ -8,7 +8,7 @@ const GOLD = "#D4B06A";
 const BORDER = "rgba(0,0,0,0.08)";
 
 export const metadata = {
-  title: "Privacy Policy — Bloom",
+  title: "Privacy Policy — Bleom",
 };
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -43,7 +43,7 @@ export default function PrivacyPolicyPage() {
               textDecoration: "none",
             }}
           >
-            ← Back to Bloom
+            ← Back to Bleom
           </Link>
         </div>
 
@@ -65,9 +65,9 @@ export default function PrivacyPolicyPage() {
 
         <Section title="Overview">
           <p>
-            Bloom ("we", "us", "our") provides AI-personalized fertility, pregnancy, and
+            Bleom ("we", "us", "our") provides AI-personalized fertility, pregnancy, and
             postpartum guidance. This policy explains what information we collect when you use
-            the Bloom app or website, how we use it, and the choices you have. By creating an
+            the Bleom app or website, how we use it, and the choices you have. By creating an
             account, you agree to the practices described here.
           </p>
         </Section>
@@ -126,7 +126,7 @@ export default function PrivacyPolicyPage() {
 
         <Section title="Third-Party Services">
           <p style={{ marginBottom: 12 }}>
-            We rely on the following third-party services to operate Bloom. Each processes data
+            We rely on the following third-party services to operate Bleom. Each processes data
             under its own privacy policy:
           </p>
           <ul style={{ margin: 0, paddingLeft: 20 }}>
@@ -182,7 +182,7 @@ export default function PrivacyPolicyPage() {
 
         <Section title="Children's Privacy">
           <p>
-            Bloom is not intended for use by anyone under 18. We do not knowingly collect
+            Bleom is not intended for use by anyone under 18. We do not knowingly collect
             information from children.
           </p>
         </Section>

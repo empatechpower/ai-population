@@ -126,7 +126,7 @@ export default function AuthScreen() {
   if (mode === "landing") {
     return (
       <View className="flex-1 bg-bg justify-center items-center px-6">
-        <Text className="font-serif text-4xl text-charcoal text-center mb-3">Bloom</Text>
+        <Text className="font-serif text-4xl text-charcoal text-center mb-3">Bleom</Text>
         <Text className="text-secondary text-center text-base mb-12 leading-6">
           Your personalized fertility and pregnancy protocol.
         </Text>

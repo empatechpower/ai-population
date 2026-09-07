@@ -95,7 +95,7 @@ export default function DeleteAccountPage() {
       <div style={{ maxWidth: 480, margin: "0 auto" }}>
         <div style={{ paddingTop: 40, paddingBottom: 16 }}>
           <Link href="/" style={{ fontSize: 13, color: TEXT_MUTED, textDecoration: "none" }}>
-            ← Back to Bloom
+            ← Back to Bleom
           </Link>
         </div>
 
@@ -112,7 +112,7 @@ export default function DeleteAccountPage() {
           Delete your account
         </h1>
         <p style={{ fontSize: 14, color: TEXT_SECONDARY, lineHeight: 1.6, marginBottom: 28 }}>
-          Sign in below to permanently delete your Bloom account and data. You don't need the app
+          Sign in below to permanently delete your Bleom account and data. You don't need the app
           installed to do this.
         </p>
 

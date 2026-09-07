@@ -609,7 +609,7 @@ export default function LandingPage() {
       <div style={{ flex: 1, paddingTop: 60 }}>
         {/* Logo mark */}
         <div className="fade-up" style={{ marginBottom: 32 }}>
-          <Image src="/logo.png" alt="Bloom" width={160} height={128} priority style={{ width: 160, height: "auto" }} />
+          <Image src="/logo.png" alt="Bleom" width={160} height={128} priority style={{ width: 160, height: "auto" }} />
         </div>
         <p
           className="fade-up-1"
