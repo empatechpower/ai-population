@@ -39,10 +39,9 @@ export async function sendToAllSubscribed(payload: { title: string; body: string
         await webpush.sendNotification(u.subscription, JSON.stringify(payload));
         sent++;
       } catch (err: any) {
+        console.error(`[webPush] failed for ${u.uid}`, err?.statusCode, err?.body || err?.message || err);
         if (err?.statusCode === 404 || err?.statusCode === 410) {
           await adminDb.collection("users").doc(u.uid).update({ web_push_subscription: null });
-        } else {
-          console.error(`[webPush] failed for ${u.uid}`, err?.message || err);
         }
       }
     }),
