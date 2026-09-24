@@ -1496,7 +1496,8 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* ── Billing ── */}
+        {/* ── Billing (hidden for admins — they have free access) ── */}
+        {!profile.is_admin && (
         <div style={{ marginTop: 24 }}>
           <button
             onClick={handleManageSubscription}
@@ -1522,6 +1523,7 @@ export default function ProfilePage() {
             </p>
           )}
         </div>
+        )}
 
         {/* ── Danger zone ── */}
         <div style={{ marginTop: 12 }}>

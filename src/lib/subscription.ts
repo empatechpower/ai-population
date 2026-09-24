@@ -5,6 +5,8 @@
 // firestore rules, which block client writes to these fields.
 export function hasActiveAccess(profile: any): boolean {
   if (!profile) return false;
+  // Admins never see the paywall or trial (is_admin can only be set server-side).
+  if (profile.is_admin === true) return true;
   if (profile.subscription_status === "active") return true;
   if (profile.subscription_status === "trialing") {
     return typeof profile.trial_ends_at === "number" && profile.trial_ends_at > Date.now();
