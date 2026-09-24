@@ -25,6 +25,7 @@ import {
   Leaf,
   MapPin,
   Sparkles,
+  ShieldCheck,
 } from "lucide-react";
 
 const GOLD = "#D4B06A";
@@ -611,12 +612,23 @@ export default function DashboardPage() {
             </span>
           </div>
         </div>
-        <button
-          onClick={() => router.push("/profile")}
-          className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center cursor-pointer shrink-0 mt-1"
-        >
-          <User size={18} className="text-secondary" />
-        </button>
+        <div className="flex items-center gap-2 shrink-0 mt-1">
+          {profile.is_admin && (
+            <button
+              onClick={() => router.push("/admin")}
+              className="h-10 px-3 rounded-pill bg-card border border-gold-border flex items-center gap-1.5 cursor-pointer"
+            >
+              <ShieldCheck size={16} className="text-gold" />
+              <span className="text-2xs text-gold font-semibold tracking-wide">Admin</span>
+            </button>
+          )}
+          <button
+            onClick={() => router.push("/profile")}
+            className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center cursor-pointer"
+          >
+            <User size={18} className="text-secondary" />
+          </button>
+        </div>
       </div>
 
       {/* ── Journey progress ── */}

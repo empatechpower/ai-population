@@ -42,6 +42,7 @@ export interface Profile {
   // pregnancy
   due_date?: string;
   web_push_subscription?: unknown;
+  is_admin?: boolean;
   [key: string]: unknown;
 }
 
