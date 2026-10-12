@@ -1,6 +1,6 @@
 'use client'
 import { usePathname, useRouter } from 'next/navigation'
-import { Home, Apple, Zap, Users } from 'lucide-react'
+import { Home, Apple, Zap, Users, BookOpen } from 'lucide-react'
 
 const GOLD = '#D4B06A'
 const MUTED = '#9A9094'
@@ -22,6 +22,7 @@ const navItems = [
   { href: '/nutrition',  label: 'Nutrition', icon: (c: string) => <Apple size={22} color={c} /> },
   { href: '/movement',   label: 'Movement',  icon: (c: string) => <Zap size={22} color={c} /> },
   { href: '/community',  label: 'Community', icon: (c: string) => <Users size={22} color={c} /> },
+  { href: '/sunnah',     label: 'Sunnah',    icon: (c: string) => <BookOpen size={22} color={c} /> },
 ]
 
 export default function BottomNav() {

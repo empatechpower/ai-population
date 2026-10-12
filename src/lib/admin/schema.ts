@@ -261,6 +261,35 @@ export const ADMIN_SCHEMAS: Record<string, CollectionSchema> = {
       { key: "sender", label: "Sender (uid)", type: "string", readOnly: true },
     ],
   },
+  sunnahContent: {
+    name: "sunnahContent",
+    label: "Sunnah Content",
+    primaryKey: "title",
+    createFields: [
+      "type", "authenticity", "category", "title", "arabic_text", "transliteration",
+      "translation_en", "source_book", "source_reference", "source_url", "explanation",
+      "timing_note", "daily_guide_section",
+    ],
+    fields: [
+      { key: "approved", label: "Approved (visible to users)", type: "boolean", listVisible: true },
+      { key: "title", label: "Title", type: "string", listVisible: true },
+      { key: "category", label: "Category", type: "string", listVisible: true },
+      { key: "daily_guide_section", label: "Daily guide section", type: "string", listVisible: true },
+      { key: "type", label: "Type", type: "string" },
+      { key: "authenticity", label: "Authenticity", type: "string" },
+      { key: "arabic_text", label: "Arabic text", type: "textarea" },
+      { key: "transliteration", label: "Transliteration", type: "textarea" },
+      { key: "translation_en", label: "Translation (English)", type: "textarea" },
+      { key: "source_book", label: "Source book", type: "string" },
+      { key: "source_reference", label: "Source reference", type: "string" },
+      { key: "source_url", label: "Source URL", type: "string" },
+      { key: "explanation", label: "Explanation", type: "textarea" },
+      { key: "tags", label: "Tags", type: "array" },
+      { key: "timing_note", label: "Timing note", type: "string" },
+      { key: "daily_guide_order", label: "Daily guide order", type: "number" },
+      { key: "featured", label: "Featured", type: "boolean" },
+    ],
+  },
 };
 
 export const ADMIN_COLLECTIONS = Object.keys(ADMIN_SCHEMAS);

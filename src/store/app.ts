@@ -43,6 +43,7 @@ export interface Profile {
   due_date?: string;
   web_push_subscription?: unknown;
   is_admin?: boolean;
+  bookmarked_sunnah_page?: boolean;
   [key: string]: unknown;
 }
 

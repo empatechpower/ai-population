@@ -318,6 +318,18 @@ export async function createWeekDetail(data: {
   return ref.id;
 }
 
+// ── Sunnah content (Islamic guidance — global, review-gated) ───
+// Filters daily_guide_section client-side (not a second `where`) so this
+// doesn't need a composite Firestore index — content volume is small.
+export async function getSunnahDailyGuide(): Promise<any[]> {
+  const q = query(collection(db, "sunnahContent"), where("approved", "==", true));
+  const snap = await getDocs(q);
+  return snap.docs
+    .map((d) => ({ _id: d.id, ...d.data() }))
+    .filter((d: any) => !!d.daily_guide_section)
+    .sort((a: any, b: any) => (a.daily_guide_order ?? 0) - (b.daily_guide_order ?? 0));
+}
+
 // ── Recovery Detail (Postpartum) ─────────────────────────────
 export async function getRecoveryDetail(weekNumber: number): Promise<any | null> {
   const q = query(

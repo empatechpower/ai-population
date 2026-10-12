@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router/js-tabs";
-import { Home, Apple, Zap, Users } from "lucide-react-native";
+import { Home, Apple, Zap, Users, BookOpen } from "lucide-react-native";
 import Svg, { Circle, Path } from "react-native-svg";
 
 const GOLD = "#D4B06A";
@@ -60,6 +60,10 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="community"
         options={{ title: "Community", tabBarIcon: ({ color }) => <Users size={22} color={color} /> }}
+      />
+      <Tabs.Screen
+        name="sunnah"
+        options={{ title: "Sunnah", tabBarIcon: ({ color }) => <BookOpen size={22} color={color} /> }}
       />
     </Tabs>
   );
