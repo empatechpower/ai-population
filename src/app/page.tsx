@@ -599,17 +599,26 @@ export default function LandingPage() {
   return (
     <div
       style={{
-        minHeight: "100vh",
+        height: "100dvh",
+        overflowY: "auto",
         background: BG,
         display: "flex",
         flexDirection: "column",
         padding: "0 24px",
       }}
     >
-      <div style={{ flex: 1, paddingTop: 60 }}>
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          paddingTop: 16,
+        }}
+      >
         {/* Logo mark */}
-        <div className="fade-up" style={{ marginBottom: 32 }}>
-          <Image src="/logo.png" alt="Bleom" width={160} height={128} priority style={{ width: 160, height: "auto" }} />
+        <div className="fade-up" style={{ marginBottom: "clamp(12px, 3dvh, 28px)" }}>
+          <Image src="/logo.png" alt="Bleom" width={160} height={128} priority style={{ width: "clamp(96px, 16dvh, 140px)", height: "auto" }} />
         </div>
         <p
           className="fade-up-1"
@@ -619,7 +628,7 @@ export default function LandingPage() {
             letterSpacing: "0.12em",
             textTransform: "uppercase" as const,
             fontWeight: 600,
-            marginBottom: 10,
+            marginBottom: 8,
           }}
         >
           AI Optimization App
@@ -627,12 +636,12 @@ export default function LandingPage() {
         <h1
           className="fade-up-2"
           style={{
-            fontSize: 36,
+            fontSize: "clamp(28px, 4.6dvh, 36px)",
             fontWeight: 500,
             color: TEXT_PRIMARY,
             letterSpacing: "-0.025em",
             lineHeight: 1.15,
-            marginBottom: 16,
+            marginBottom: 12,
             fontFamily: 'Georgia,"Palatino Linotype",serif',
           }}
         >
@@ -643,10 +652,10 @@ export default function LandingPage() {
         <p
           className="fade-up-3"
           style={{
-            fontSize: 15,
+            fontSize: 14,
             color: TEXT_SECONDARY,
-            lineHeight: 1.7,
-            marginBottom: 36,
+            lineHeight: 1.55,
+            marginBottom: "clamp(14px, 3dvh, 28px)",
           }}
         >
           We personalize everything to your biology, lifestyle, and environment.
@@ -657,8 +666,8 @@ export default function LandingPage() {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: 12,
-            marginBottom: 36,
+            gap: 8,
+            marginBottom: 8,
           }}
         >
           {[
@@ -688,10 +697,11 @@ export default function LandingPage() {
       <div
         className="fade-up-5"
         style={{
-          paddingBottom: 40,
+          paddingTop: 12,
+          paddingBottom: "max(20px, env(safe-area-inset-bottom))",
           display: "flex",
           flexDirection: "column",
-          gap: 12,
+          gap: 10,
         }}
       >
         <button
@@ -702,7 +712,7 @@ export default function LandingPage() {
             color: "#fff",
             border: "none",
             borderRadius: 14,
-            padding: "16px",
+            padding: "14px",
             fontSize: 16,
             fontWeight: 600,
             cursor: "pointer",
@@ -723,7 +733,7 @@ export default function LandingPage() {
             color: TEXT_SECONDARY,
             border: `1.5px solid ${BORDER}`,
             borderRadius: 14,
-            padding: "16px",
+            padding: "14px",
             fontSize: 16,
             fontWeight: 500,
             cursor: "pointer",
