@@ -1525,6 +1525,26 @@ export default function ProfilePage() {
         </div>
         )}
 
+        {/* ── Log out ── */}
+        <button
+          onClick={() => logOut()}
+          style={{
+            width: "100%",
+            marginTop: 12,
+            background: "var(--card)",
+            border: "1px solid var(--border)",
+            borderRadius: 14,
+            padding: "16px 18px",
+            fontSize: 14,
+            fontWeight: 600,
+            color: "var(--text-primary)",
+            cursor: "pointer",
+            textAlign: "left",
+          }}
+        >
+          Log out
+        </button>
+
         {/* ── Danger zone ── */}
         <div style={{ marginTop: 12 }}>
           {!confirmingDelete ? (
