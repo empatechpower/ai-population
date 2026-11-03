@@ -1525,6 +1525,28 @@ export default function ProfilePage() {
         </div>
         )}
 
+        {/* ── Admin dashboard (admins only) ── */}
+        {profile.is_admin && (
+          <button
+            onClick={() => router.push("/admin")}
+            style={{
+              width: "100%",
+              marginTop: 12,
+              background: "var(--card)",
+              border: "1px solid var(--border)",
+              borderRadius: 14,
+              padding: "16px 18px",
+              fontSize: 14,
+              fontWeight: 600,
+              color: "var(--text-primary)",
+              cursor: "pointer",
+              textAlign: "left",
+            }}
+          >
+            Admin dashboard
+          </button>
+        )}
+
         {/* ── Log out ── */}
         <button
           onClick={() => logOut()}
